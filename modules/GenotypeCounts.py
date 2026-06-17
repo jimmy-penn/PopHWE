@@ -55,6 +55,7 @@ class GenotypeCounts:
                 id_var = var
             else:
                 self.anc_groups.append(var)
+                self.num_anc_groups += 1
 
         file.close()
 
