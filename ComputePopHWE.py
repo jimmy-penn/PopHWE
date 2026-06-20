@@ -116,7 +116,7 @@ def main():
                     Sbb += Eibb       
 
             if Naa + Nab + Nbb >= min_pop_size:
-                chi2, Eaa, Eab, Ebb = CalcHwe(Naa, Nab, Nbb)
+                chi2, Enaa, Enab, Enbb = CalcHwe(Naa, Nab, Nbb)
                 eChi, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
                 pChi = 0
                 if Saa * Sab * Sbb > 0:
