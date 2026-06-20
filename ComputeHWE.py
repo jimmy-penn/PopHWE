@@ -38,20 +38,38 @@ def main():
 
     min_pop_size = args.min_pop_size
 
-    geno_cnts_obj = GenotypeCounts(args.geno_cnt_file)
-    num_pops = geno_cnts_obj.num_anc_groups
-    num_pops = 5
+    geno_cnt_file = args.geno_cnt_file
+    output_file = args.output_file
 
+    geno_cnts_obj = GenotypeCounts(geno_cnt_file)
+    num_pops = geno_cnts_obj.num_anc_groups
+    
     geno_cnts_obj.ShowSummary()
+
+    out_file = open(output_file, "w")
+    if not out_file:
+        print(f"ERROR: cannot create output file {output_file} for writing!")
+        exit()  
+
+    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tChi2\tEChi2\tPChi2"
+    out_file.write(out_header + "\n")
+
+    # Input file might be very large. HWE results are calculated line by line and saved to output file 
+    # in blocks of lines. This is to save memory and also to save some results to output file while 
+    # calculating HWE from the input file. The block size can be adjusted as needed.
+    block_size = 100000         
+    num_lines_in_block = 0  
+    save_lines = [] 
+    num_save_lines = 0
 
     # Open the genotype count file and process each line to compute HWE statistics
     # The expected format of each line is: var_id, geno_cnt_pop1, geno_cnt_pop2, ..., geno_cnt_popN
     # where geno_cnt_popX is in the format "aa/ab/bb" representing the counts of each genotype in that population.
     # Cells with invalid format will be treated as genotype counts = 0 (aa + ab + bb = 0) for that population.
     # The script uses similar variable names as in the paper, such as Naa, Saa, Eaa, etc. 
-    with open(args.geno_cnt_file, 'r') as file:
+    with open(geno_cnt_file, 'r') as cnt_file:
         line_no = 0
-        for line in file:
+        for line in cnt_file:
             # Skip the header line
             if line_no == 0:
                 line_no += 1
@@ -59,11 +77,8 @@ def main():
             
             line = line.strip()
 
-            line = "a0	0/4/9	4/0/6	0/0/3	5/0/0	0/5/0"
-
             vals = line.split(geno_cnts_obj.delimiter)
             num_vals = len(vals)
-            print(f"vals: {vals}")
             if num_vals != num_pops + 1:
                 print(f"ERROR: Line {line_no} has {num_vals} values, expected {num_pops + 1}.")
                 exit()
@@ -103,16 +118,33 @@ def main():
             if Naa + Nab + Nbb >= min_pop_size:
                 chi2, Eaa, Eab, Ebb = CalcHwe(Naa, Nab, Nbb)
                 eChi, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
-                pChi = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
+                pChi = 0
+                if Saa * Sab * Sbb > 0:
+                    pChi = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
 
-                print(f"{var_id}:") 
-                print(f"\tN: {Naa}\t{Nab}\t{Nbb}") 
-                print(f"\tS: {Saa}\t{Sab}\t{Sbb}") 
-                print(f"\tE: {Eaa}\t{Eab}\t{Ebb}") 
-                print(f"\tChi2: {chi2}\teChi: {eChi}\tpChi: {pChi}")
+                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4e}"
+                save_lines.append(save_line)
+                num_lines_in_block += 1
+
+                if num_lines_in_block >= block_size:
+                    out_file.write("\n".join(save_lines) + "\n")
+                    save_lines = []
+                    num_lines_in_block = 0
+                    num_save_lines += block_size
+                    print(f"\tSaved {num_save_lines} lines to output file {output_file}")
 
             line_no += 1
-            break
+            
+        cnt_file.close()
+
+        # Write any remaining lines in the block to the output file
+        if save_lines:
+            out_file.write("\n".join(save_lines) + "\n")
+            num_save_lines += len(save_lines)
+            print(f"Done. Saved total {num_save_lines} lines to output file {output_file}")
+
+    out_file.close()
+
 
 if __name__ == "__main__":
     main()
