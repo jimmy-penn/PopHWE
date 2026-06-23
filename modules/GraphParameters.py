@@ -42,7 +42,7 @@ class GraphParameters:
         self.width  = self.SetValueLimits(args.gw, min_graph_size, max_graph_size)
         self.height = self.SetValueLimits(args.gh, min_graph_size, max_graph_size)
         
-        chi2_min_val, chi2_max_val = 0, 10000
+        chi2_min_val, chi2_max_val = -100, 10000
             
         self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val)
         self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val)
@@ -58,7 +58,7 @@ class GraphParameters:
             exit()
 
         # For a histogram, x-axis is chi2, y-axis is number of variants
-        if not self.xmax:
+        if self.xmax == None:
             self.xmax = 100
 
         if self.plot_type == 'histo':
@@ -66,11 +66,21 @@ class GraphParameters:
 
             self.bin_size = self.SetValueLimits(args.bin_size, 0, 1000)
 
-            self.ymin  = self.SetValueLimits(args.ymin, min_cnts, max_cnts)
-            self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts)
+            self.xmin = 0
+            self.xmax = 100
+            self.ymin = 0
+            self.ymax = 10000
 
-            if not self.ymax:
-                self.ymax = self.bin_size * 20
+            print(f'fm {self.xmax}')
+            if args.xmax:
+                self.xmax  = self.SetValueLimits(args.ymax, 10, 100000)
+
+            print(f'nfm {self.xmax}')
+
+            if args.ymax:
+                self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts)
+
+            print(f'm {args.ymax} s {self.ymax}')
         else:
             self.dot_size = self.SetValueLimits(args.dot_size, 1, 20)
 
@@ -80,13 +90,19 @@ class GraphParameters:
 
         self.show_bin_cnts = args.show_bin_cnts
         self.chi_dist = args.chi_dist
+        self.het_column = hwe_file.het_column
+        self.show_hetexc = args.show_hetexc
         self.title = args.title
         self.tight_plot = args.tight_plot
         self.nolimits = args.nolimits
 
+        # Currently not user-speficied
         self.axis_lbl_font = 12
         self.title_font = 14
 
+        self.dot_color = 'black'
+        self.het_color = 'purple'
+        self.line_color = 'gray'
         self.line_width = 0.8
         self.tick_lbl_size = 9
 
@@ -147,6 +163,7 @@ class GraphParameters:
 
         return new_val
   
+
     def ShowSummary(self):
         """
         Show all parameters

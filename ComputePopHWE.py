@@ -51,7 +51,7 @@ def main():
         print(f"ERROR: cannot create output file {output_file} for writing!")
         exit()  
 
-    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tChi2\tEChi2\tPChi2"
+    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tHetExc\tChi2\tEChi2\tPChi2"
     out_file.write(out_header + "\n")
 
     # Input file might be very large. HWE results are calculated line by line and saved to output file 
@@ -122,7 +122,11 @@ def main():
                 if Saa * Sab * Sbb > 0:
                     pChi = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
 
-                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4e}"
+                is_het_exc = 0
+                if Nab > Enab:
+                    is_het_exc = 1
+
+                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4e}"
                 save_lines.append(save_line)
                 num_lines_in_block += 1
 

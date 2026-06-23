@@ -56,7 +56,10 @@ def ChiD2Pdf(x):
         
     return  y
 
-def PlotChi2Histogram(params, in_file, out_file):
+def PlotHistogram(params, in_file, out_file):
+    """
+    Plot histogram for the selected HWE variable
+    """
     fig, ax = plt.subplots(figsize=(params.width, params.height), layout='constrained')
 
     pf = None
@@ -83,8 +86,6 @@ def PlotChi2Histogram(params, in_file, out_file):
     histo_vals = []        
     num_bins = round((max_chi - min_chi) / params.bin_size) + 1
     
-    print(f'min {min_chi} max {max_chi} num {num_bins} and bin size {params.bin_size}\n')
-
     bin_starts = []
     bin_cnts = []
 
@@ -104,9 +105,6 @@ def PlotChi2Histogram(params, in_file, out_file):
             if bin_id < num_bins:
                 bin_cnts[bin_id] += 1
 
-        if i % 100000 == 0:
-            print(f'x = {x} bin {bin_id} cnt {bin_cnts[bin_id]}')
-
     max_bin_id = 0
     max_bin_cnt = 0
     tot_cnts = 0
@@ -120,39 +118,43 @@ def PlotChi2Histogram(params, in_file, out_file):
 
     if params.show_bin_cnts:            
         print(f'No. {max_bin_id} cnt {max_bin_cnt}')
-        
-    line_width = 0.8
-    tick_lbl_size = 9
-        
+                
     ax.set_xlim(params.xmin, params.xmax)
     ax.set_ylim(params.ymin, params.ymax)
-    axis_lbl_font = 12
-    title_font = 14
 
-    print(f'Plotting histogram')
-        
     bins = np.array(bin_starts) 
     cnts = np.array(bin_cnts) 
     
-    c_val = 10000
-    d_val = 10
-    chi_xs = []
-    chi_ys = []
-    chi_dx = 0.01
-    chi_max_x = 100
-    num_vs = int(chi_max_x/chi_dx)
-    y_max = 50000
-
     ax.hist(bins[:-1], bins, weights=cnts, rwidth=1.0)
-#    if params.chi_dist:
-#        ax.plot(x_pdf, y_pdf, linewidth=line_width, color="red")
-    ax.set_xlabel(params.disp_xvar, fontsize=axis_lbl_font)
-    ax.set_ylabel("Number of SNPs", fontsize=axis_lbl_font)
+    if params.chi_dist:
+        x_pdf = []
+        y_pdf = []
 
-    ax.tick_params(axis='x', labelsize=tick_lbl_size)
+        x = 0
+        y = 0
+            
+        for bin_no in range(num_bins):
+            bin_st = min_chi + bin_no * params.bin_size
+            cnt = bin_cnts[bin_no]
+            tot_cnts += cnt
+
+            if bin_st >= params.xmin and bin_st < params.xmax:
+                x = bin_st
+                y = ChiPdf(x) * num_snps * params.bin_size
+    
+                x_pdf.append(x-params.bin_size*0) # Why shifting to right by two bins
+                y_pdf.append(y)
+
+        print(f'Total {tot_cnts} SNPs in {num_bins} bins')
+        ax.plot(x_pdf, y_pdf, linewidth=params.line_width, color="red")
+
+    ax.set_xlabel(params.disp_xvar, fontsize=params.axis_lbl_font)
+    ax.set_ylabel("Number of SNPs", fontsize=params.axis_lbl_font)
+
+    ax.tick_params(axis='x', labelsize=params.tick_lbl_size)
 
     if params.title != "":
-        ax.set_title(params.title, fontsize=title_font)
+        ax.set_title(params.title, fontsize=params.title_font)
 
     try:
         plt.savefig(out_file)
@@ -161,7 +163,95 @@ def PlotChi2Histogram(params, in_file, out_file):
     else:
         print(f'\nSaved results to {out_file}\n')
 
+
+def PlotScatterplot(params, in_file, out_file):
+    """
+    Plot scatterplot showing relationship of two selected HWE variables
+    """
+
+    fig, ax = plt.subplots(figsize=(params.width, params.height), layout='constrained')
+
+    pf = None
+    try:
+        pf = pd.read_csv(in_file, sep="\t")
+    except Exception as error:
+        print(f'\nERROR: Cannot open {in_file}: {error}\n')
+        exit()
         
+    num_rows = len(pf[params.xvar])
+    num_snps = num_rows - 1
+    print(f'Reading {num_rows} rows from {in_file}\n')
+
+    # All variants or all except excluded variants when specified
+    xvals = []
+    yvals = []
+    colors = []
+
+    # All heterozygous excess variants when specified
+    xhvals = []
+    yhvals = []
+    hcolors = []
+
+    max_xval, max_yval = 0, 0
+
+    for i in range(num_snps):
+
+        x = pf[params.xvar][i+1]
+        y = pf[params.yvar][i+1]
+
+        if x > max_xval:
+            max_xval = x
+        if y > max_yval:
+            max_yval = y
+
+        if params.show_hetexc:
+            is_het_exc = pf[params.het_column][i+1]
+            if is_het_exc:
+                xhvals.append(x)
+                yhvals.append(y)
+                hcolors.append(params.het_color)
+            else:
+                xvals.append(x)
+                yvals.append(y)
+                colors.append(params.dot_color)
+        else:
+            xvals.append(x)
+            yvals.append(y)
+            colors.append(params.dot_color)
+
+    print(f'Total {num_snps} SNPs for plotting.')        
+    print(f'x: 0 - {max_xval} y: 0 - {max_yval} xmax {params.xmax}')        
+        
+    ax.scatter(xvals, yvals, s=params.dot_size, c=colors, data=pf)
+    ax.scatter(xhvals, yhvals, s=params.dot_size, c=hcolors, data=pf)
+    ax.plot([params.xmin, params.xmax],[params.ymin, params.ymax], linewidth=params.line_width, color=params.line_color)
+
+    ax.set_xlabel(params.disp_xvar, fontsize=params.axis_lbl_font)
+    ax.set_ylabel(params.disp_yvar, fontsize=params.axis_lbl_font)
+    ax.set_xlim(params.xmin, params.xmax)
+    ax.set_ylim(params.ymin, params.ymax)
+
+    if params.title != "":
+        ax.set_title(params.title, fontsize=params.title_font)
+
+    try:
+        plt.savefig(out_file)
+    except Exception as error:
+        print(f'\nERROR: Cannot save results to {out_file}: {error}\n')
+    else:
+        print(f'\nSaved results to {out_file}\n')
+
+
+def PlotHweResults(params, in_file, out_file):
+    """
+    Plot HWE results either in a histogram or a scatterplot, specified by the user
+    """
+
+    if params.plot_type == 'histo':
+        PlotHistogram(params, in_file, out_file)
+    else:
+        PlotScatterplot(params, in_file, out_file)
+
 def main():
     """
     Main function to parse arguments and generate the plot.
@@ -181,13 +271,12 @@ def main():
     parser.add_argument("--xvar", help="Variable to be plotted on x-axis", metavar="", default="PChi2")
     parser.add_argument("--yvar", help="Variable to be plotted on y-axis", metavar="", default="EChi2")
     parser.add_argument("--bin_size", help="Bin size for chi", metavar="", default=1)
- #   parser.add_argument("--min_chi", help="Min chi value", metavar="", default=0)
- #   parser.add_argument("--max_chi", help="Max chi value", metavar="", default=50)
     parser.add_argument("--chi_dist", help="Show chi2 distribution with df=1", action="store_true")
     parser.add_argument("--dot_size", help="Dot size (0.5, 1, 3, etc) of the scatter plot", metavar="", default=1)
     parser.add_argument("--title", help="The title of the scatterplot", metavar="", default="")
     parser.add_argument("--scatter", help="Show scatterplot", action="store_true")
     parser.add_argument("--show_bin_cnts", help="Show bins and counts", action="store_true")
+    parser.add_argument("--show_hetexc", help="Highlight HetExc variants", action="store_true")
     parser.add_argument("--no_outlier", help="Do not show outliers", action="store_true")
     parser.add_argument("--tight_plot", help="Generate a tight plot without margins", action="store_true")
     parser.add_argument("--nolimits", help="Let python select axis limits", action="store_true")
@@ -205,8 +294,9 @@ def main():
 
     params = GraphParameters(args, hwe_result_file)
     params.ShowSummary()
-    
-    PlotChi2Histogram(params, args.input_file, args.output_file)
+
+    print(f'\nPlotting HWE-test results')        
+    PlotHweResults(params, args.input_file, args.output_file)
 
 if __name__ == "__main__":
     main()
