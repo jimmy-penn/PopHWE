@@ -26,6 +26,7 @@ class HweResultFile:
         self.is_valid = True
         self.CheckFileFormat()
 
+        self.chi_columns = [self.chi2_column, self.echi2_column, self.pchi2_column]
 
     def CheckFileFormat(self):
         """
