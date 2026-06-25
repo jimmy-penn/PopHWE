@@ -252,6 +252,7 @@ def PlotHweResults(params, in_file, out_file):
     else:
         PlotScatterplot(params, in_file, out_file)
 
+
 def main():
     """
     Main function to parse arguments and generate the plot.
