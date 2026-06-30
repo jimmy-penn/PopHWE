@@ -95,6 +95,8 @@ def main():
 
                 Niaa, Niab, Nibb = 0, 0, 0  # genotype counts of population i for aa, ab, bb respectively
                 Ni = 0                      # total genotype count of population i       
+                p = 1
+                q = 0
 
                 if num_genos == 3 and all(cnt.isdigit() for cnt in geno_cnts):
                     Niaa, Niab, Nibb = map(int, geno_cnts)
@@ -104,18 +106,19 @@ def main():
                     Nab += Niab
                     Nbb += Nibb
 
-                    p = (Niaa + 0.5 * Niab) / Ni
-                    q = 1 - p
+                    if Ni > 0:
+                        p = (Niaa + 0.5 * Niab) / Ni
+                        q = 1 - p
 
-                    Eiaa = Ni * p**2
-                    Eiab = Ni * 2 * p * q
-                    Eibb = Ni * q**2
+                        Eiaa = Ni * p**2
+                        Eiab = Ni * 2 * p * q
+                        Eibb = Ni * q**2
 
-                    Saa += Eiaa
-                    Sab += Eiab
-                    Sbb += Eibb       
+                        Saa += Eiaa
+                        Sab += Eiab
+                        Sbb += Eibb       
 
-            if Naa + Nab + Nbb >= min_pop_size:
+            if Naa + Nab + Nbb >= min_pop_size and p * q > 0.001:
                 chi2, Enaa, Enab, Enbb = CalcHwe(Naa, Nab, Nbb)
                 eChi, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
                 pChi = 0
@@ -126,7 +129,7 @@ def main():
                 if Nab > Enab:
                     is_het_exc = 1
 
-                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4e}"
+                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4f}"
                 save_lines.append(save_line)
                 num_lines_in_block += 1
 

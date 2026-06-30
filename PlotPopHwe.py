@@ -138,7 +138,7 @@ def PlotHistogram(params, in_file, out_file):
             cnt = bin_cnts[bin_no]
             tot_cnts += cnt
 
-            if bin_st >= params.xmin and bin_st < params.xmax:
+            if bin_st > params.xmin and bin_st < params.xmax:
                 x = bin_st
                 y = ChiPdf(x) * num_snps * params.bin_size
     
@@ -263,8 +263,8 @@ def main():
         When plotting a scatter plot, you can specify which two scores to plot with --xcol and --ycol options. ")
     parser.add_argument("input_file", help="HWE sim result")
     parser.add_argument("output_file", help="The .png file to save the scatterplot")
-    parser.add_argument("--gw", help="Graph width in inches", metavar="", default=14)
-    parser.add_argument("--gh", help="Graph height in inches", metavar="", default=14)
+    parser.add_argument("--gw", help="Graph width in inches", metavar="", default=10)
+    parser.add_argument("--gh", help="Graph height in inches", metavar="", default=10)
     parser.add_argument("--xmin", help="Min x value to plot", metavar="")
     parser.add_argument("--xmax", help="Max x value to plot", metavar="")
     parser.add_argument("--ymin", help="Min y value to plot", metavar="")

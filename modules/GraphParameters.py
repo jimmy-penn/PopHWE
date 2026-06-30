@@ -71,9 +71,8 @@ class GraphParameters:
             self.ymin = 0
             self.ymax = 10000
 
-            print(f'fm {self.xmax}')
             if args.xmax:
-                self.xmax  = self.SetValueLimits(args.ymax, 10, 100000)
+                self.xmax  = self.SetValueLimits(args.xmax, 10, 100000)
 
             print(f'nfm {self.xmax}')
 
@@ -82,6 +81,12 @@ class GraphParameters:
 
             print(f'm {args.ymax} s {self.ymax}')
         else:
+            if not args.ymin:
+                self.ymin  = self.xmin
+
+            if not args.ymax:
+                self.ymax  = self.xmax
+
             self.dot_size = self.SetValueLimits(args.dot_size, 1, 20)
 
         self.plot_title = ""          # graph title
@@ -168,6 +173,7 @@ class GraphParameters:
         """
         Show all parameters
         """
+
         print(f"\nParameters:")
         print(f"\tPlot type:   {self.plot_type}")
         print(f"\tPlot size:   {self.width} x {self.height}")
@@ -187,4 +193,4 @@ class GraphParameters:
             print(f"\tY-range:     {self.ymin} - {self.ymax}")
 
             print(f"\tDot size:    {self.dot_size}")
-  
+ 
