@@ -220,7 +220,7 @@ def PlotScatterplot(params, in_file, out_file):
             colors.append(params.dot_color)
 
     print(f'Total {num_snps} SNPs for plotting.')        
-    print(f'x: 0 - {max_xval} y: 0 - {max_yval} xmax {params.xmax}')        
+    print(f'x: 0 - {max_xval} y: 0 - {max_yval}')        
         
     ax.scatter(xvals, yvals, s=params.dot_size, c=colors, data=pf)
     ax.scatter(xhvals, yhvals, s=params.dot_size, c=hcolors, data=pf)
@@ -271,7 +271,7 @@ def main():
     parser.add_argument("--ymax", help="Max y value to plot", metavar="")
     parser.add_argument("--xvar", help="Variable to be plotted on x-axis", metavar="", default="PChi2")
     parser.add_argument("--yvar", help="Variable to be plotted on y-axis", metavar="", default="EChi2")
-    parser.add_argument("--bin_size", help="Bin size for chi", metavar="", default=1)
+    parser.add_argument("--bin_size", help="Bin size for chi", metavar="")
     parser.add_argument("--chi_dist", help="Show chi2 distribution with df=1", action="store_true")
     parser.add_argument("--dot_size", help="Dot size (0.5, 1, 3, etc) of the scatter plot", metavar="", default=1)
     parser.add_argument("--title", help="The title of the scatterplot", metavar="", default="")

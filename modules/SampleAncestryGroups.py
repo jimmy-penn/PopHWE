@@ -9,8 +9,11 @@ class SampleAncestryGroups:
     """
 
     def __init__(self, vcf_smps, args):
-        self.grafanc_file = args.grafanc_file       # Name of the GrafAnc output file
-        self.use_sub_anc  = args.use_sub_anc        # Whether to assign subjects to subcontiental groups or not
+        self.grafanc_file = args.grafanc_file  # Name of the GrafAnc output file
+        self.use_sub_anc = args.use_sub_anc    # Whether to assign subjects to subcontiental groups or not
+        self.use_groups = args.use_groups      # Whether the current ancestry grouping is acceptable or not
+        self.merge_file = args.merge_list      # File to contain ancestry group merge list
+        
         self.num_mix_groups = 1        # Number of subgroups to divide admixed groups into
         self.pct_anc_bin = 100         # Bin to sub groups based on pe, pf, or pa values
 
@@ -33,7 +36,7 @@ class SampleAncestryGroups:
 
         self.all_anc_groups = []       # All ancestry groups 
         self.anc_group_sizes = {}      # Number of samples assigned to each ancestry group 
-        self.num_anc_groups = []       # Number of ancestry groups 
+        self.num_anc_groups = 0        # Number of ancestry groups 
 
         self.anc_id_column = []        # Index of ancestry group ID column in GrafAnc output file
         self.raw_pe_column = []        # Index of RawPe column in GrafAnc output file
@@ -58,6 +61,14 @@ class SampleAncestryGroups:
         self.ReadSampleGrafAncScores()
         self.GetSampleAncestryGroups()
         self.GetAllAncestryGroups()
+
+        self.ShowSummary()
+
+        if self.merge_file:
+            self.MergeAncestryGroups()
+
+            print("\nAfter merging ancestry groups, the new ancestry groups are:")
+            self.ShowSummary()
 
 
     def GetIndexGivenGaColumnName(self, chk_col):
@@ -105,6 +116,89 @@ class SampleAncestryGroups:
             self.smp_anc_ids.append(ga_anc_id)
 
 
+    def MergeAncestryGroups(self):
+        """
+        Merge ancestry groups based on the user-specified merge list file
+        """
+
+        merge_anc_grps = {} # A dict to store the mapping from old ancestry group IDs to new merged ancestry group IDs
+
+        with open(self.merge_file, 'r') as mfh:
+            try:
+                header = mfh.readline().strip()
+            except ValueError as error:
+                print(f'\nERROR: failed to read header from {self.merge_file}: {error}\n')
+                exit()
+            except Exception as error:
+                print(f'\nError: {error}\n')
+                exit()
+                
+            cols = header.split("\t")
+            exp_columns = ['Ancestries', 'MergeTo']
+
+            if cols != exp_columns:
+                print(f"\nERROR: Invalid header in merge list file {self.merge_file}: {header}\n")
+                print(f"Expected header is: {'\t'.join(exp_columns)}\n")
+                exit()  
+
+            line_no = 0
+            for line in mfh:
+                line = line.strip()
+                if not line:
+                    continue
+
+                cols = line.split("\t")
+                if len(cols) != 2:
+                    print(f"\nERROR: Invalid line in merge list file {self.merge_file}: {line}\n")
+                    exit()  
+
+                if not cols[1].strip().isdigit():
+                    print(f"\nERROR: Invalid ancestry group ID in merge list file {self.merge_file}: {cols[1]}\n")
+                    exit() 
+
+                main_anc_id  = int(cols[1])
+                if not main_anc_id in self.all_anc_groups:
+                    print(f"\nERROR: Ancestry group {main_anc_id} in merge list file {self.merge_file} is not found in the current ancestry groups\n")
+                    exit()     
+
+                mrg_ancs = []
+
+                ancestries = cols[0].strip('').replace('\"', '').split(",")
+                
+                for mrg_anc_str in ancestries:
+                    if mrg_anc_str.strip() == "":
+                        continue
+
+                    if not mrg_anc_str.strip().isdigit():
+                        print(f"\nERROR: Invalid ancestry group ID in merge list file {self.merge_file}: {mrg_anc_str}\n")
+                        exit() 
+
+                    mrg_anc = int(mrg_anc_str.strip())
+
+                    if not mrg_anc in self.all_anc_groups:
+                        print(f"\nERROR: Ancestry group {mrg_anc} in merge list file {self.merge_file} is not found in the current ancestry groups\n")
+                        exit()  
+
+                    if mrg_anc in merge_anc_grps:
+                        print(f"\nERROR: Ancestry group {mrg_anc} is already assigned to ancestry group {merge_anc_grps[mrg_anc]}\n")
+                        exit()
+
+                    if mrg_anc != main_anc_id:
+                        merge_anc_grps[mrg_anc] = main_anc_id
+
+                line_no += 1
+        mfh.close()                               
+
+        for smp_no in range(self.num_vcf_samples):
+            anc_id = self.smp_anc_ids[smp_no]
+
+            if anc_id in merge_anc_grps:
+                new_anc_id = merge_anc_grps[anc_id]
+                self.smp_anc_ids[smp_no] = new_anc_id 
+
+        self.GetAllAncestryGroups()
+
+
     def AssignAncestryGroupsUsingScores(self, scores):
         """
         Assign a sample into an ancestry group using its GrafAnc scores and user specifications
@@ -123,8 +217,6 @@ class SampleAncestryGroups:
         smp_anc_id = sup_anc_id
         if self.use_sub_anc:
             smp_anc_id = sub_anc_id
-
-        print(f"adm {self.num_mix_groups} anc {sub_anc_id} sup {sup_anc_id} anc bin {self.pct_anc_bin}\nscores {scores}")
 
         # For 107 = AFA, 601 = LAT 1, 602 = LAT 2, 603 = Native Amr, split them into more groups
         if self.num_mix_groups > 1: 
@@ -148,7 +240,6 @@ class SampleAncestryGroups:
                 smp_anc_id = int(smp_anc_id * 100 + bin_id)
             else:
                 smp_anc_id = int(smp_anc_id * 100)
-
 
         return smp_anc_id
 
@@ -196,19 +287,14 @@ class SampleAncestryGroups:
         print(f"Read GrafAnc scores for {self.num_ga_samples} samples")
 
 
-    def SetSampleAncestryGroups(self):
-        """
-        Set ancestry groups based on GrafAnc-assigned groups and GrafAnc scores
-        """
-
-        print(f"Setting sample ancestry groups")
-
     def GetAllAncestryGroups(self):
         """
         Summarize ancestry groups assigned to all samples
         """
 
         smp_anc_grps = {}
+        self.anc_group_sizes = {}
+        self.all_anc_groups = []
 
         for i in range(self.num_vcf_samples):
             smp_id = self.smp_anc_ids[i]
@@ -237,9 +323,6 @@ class SampleAncestryGroups:
             anc_pos = anc_grp_to_pos[anc_id]
             self.smp_anc_group_pos.append(anc_pos)
 
-        print(f'ancs {self.anc_group_sizes}')
-        print(f'sort {self.all_anc_groups}')
-
 
     def ShowSummary(self):
         """
@@ -249,7 +332,6 @@ class SampleAncestryGroups:
         print(f'\nSummary of sample ancestry groups')
         print(f'\tSamples in VCF:     {self.num_vcf_samples}')
         print(f'\tSamples in GrafAnc: {self.num_ga_samples}')
-        print(f'\tGA scores: {', '.join(self.ga_score_names)}.')
         print(f'\tTotal {self.num_anc_groups} ancestry groups:')
 
         for smp_no in range(self.num_vcf_samples):
@@ -258,15 +340,13 @@ class SampleAncestryGroups:
             anc_id = self.smp_anc_ids[smp_no]
             anc_pos = self.smp_anc_group_pos[smp_no]
 
-#            print(f'\t\tsmp {smp_id}： anc_id {anc_id} pos {anc_pos}')
-
             if smp_no > 100:
                 break
 
-        anc_grp_no = 0
+        anc_grp_no = 1
         for anc_id in self.all_anc_groups:
             num_smps = self.anc_group_sizes[anc_id]
-            print(f'\t\tNo. {anc_grp_no}\tanc_group_id {anc_id}：  {num_smps}  samples')
+            print(f'\t\tNo. {anc_grp_no}\tanc_group_id {anc_id}:  {num_smps}  samples')
 
             anc_grp_no += 1
 

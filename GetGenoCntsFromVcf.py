@@ -21,12 +21,6 @@ def ComputePopGenoCntsFromVcf(smp_anc_grps, args):
 
     vcf_file = smp_anc_grps.vcf_smp_obj.vcf_file
 
-    print(f"Adm groups {args.num_mix_groups}") 
-    if args.use_sub_anc:
-        print(f"Use sub") 
-
-    exit()
-
     ofh = open(args.output_file, "w")
     if not ofh:
         print(f"ERROR: cannot create output file {args.output_file} for writing!")
@@ -36,14 +30,12 @@ def ComputePopGenoCntsFromVcf(smp_anc_grps, args):
     for anc_id in smp_anc_grps.all_anc_groups:
         out_header += f"\tAncID_{anc_id}"
 
-    print(f"head {out_header}")
-
     ofh.write(out_header + "\n")
 
     # VCF file might be very large. Genotype counts are calculated line by line and saved to output file 
     # in blocks of lines. This is to save memory and also to save some results to output file while 
     # calculating genotype counts from the input file. The block size can be adjusted as needed.
-    block_size = 10000         
+    block_size = 50000         
     num_lines_in_block = 0  
     save_lines = [] 
     num_save_lines = 0
@@ -130,7 +122,7 @@ def ComputePopGenoCntsFromVcf(smp_anc_grps, args):
                 print(f"\tSaved {num_save_lines} lines to output file {args.output_file}. Time used: {diff_time}. Total {tot_time}")
 
             num_snps += 1
-#            if num_snps > 40000:
+#            if num_snps > 30000:
 #                break
 
         vfh.close()
@@ -161,11 +153,17 @@ def main():
     parser.add_argument("output_file", help="The .png file to save the scatterplot")
     parser.add_argument("--use_sub_anc", help="Use sub-continental ancestry groups", action="store_true")
     parser.add_argument("--num_mix_groups", help="Further divide admixed groups into xx subgroups", metavar="", default=1)
+    parser.add_argument("--use_groups", help="Current ancestry grouping is good, use it for HWE-test", action="store_true")
+    parser.add_argument("--merge_list", help="Two-column ancestry group merge list file, eash line like '303 301+302'", metavar="")
 
     args = parser.parse_args()
 
     if not os.path.isfile(args.vcf_file):
         print(f"\nERROR: didn't find file {args.vcf_file}\n")
+        exit()
+
+    if args.merge_list and not os.path.isfile(args.merge_list):
+        print(f"\nERROR: didn't find file {args.merge_list}\n") 
         exit()
 
     st_time = time.time()
@@ -178,9 +176,15 @@ def main():
         exit()
 
     smp_anc_grps = SampleAncestryGroups(vcf_smps, args)
-    smp_anc_grps.ShowSummary()
-    
-    ComputePopGenoCntsFromVcf(smp_anc_grps, args)
+
+    if args.use_groups:
+        print(f'Current ancestry grouping looks good')
+        ComputePopGenoCntsFromVcf(smp_anc_grps, args)
+    else:
+        msg = "NOTE:\n\nIf the current ancestry grouping looks good:\n" + \
+              "\tPlease run the script with '--use_groups' option to use these ancestry groups.\n" + \
+              "Otherwise:\n\tPlease run the script with --merge_list' option to merge ancestry groups."           
+        print(f"\n{msg}\n")
 
     ed_time = time.time()
     diff_time = MyUtil.GetTimeDiffString(st_time, ed_time)

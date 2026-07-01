@@ -38,56 +38,40 @@ class GraphParameters:
         self.disp_xvar = self.GetAxisDisplayValues(self.xvar, hwe_file)
         self.disp_yvar = self.GetAxisDisplayValues(self.yvar, hwe_file)
         
-        min_graph_size, max_graph_size = 3, 100
-        self.width  = self.SetValueLimits(args.gw, min_graph_size, max_graph_size)
-        self.height = self.SetValueLimits(args.gh, min_graph_size, max_graph_size)
+        min_graph_size, max_graph_size, def_graph_size = 3, 100, 10
+        self.width  = self.SetValueLimits(args.gw, min_graph_size, max_graph_size, def_graph_size)
+        self.height = self.SetValueLimits(args.gh, min_graph_size, max_graph_size, def_graph_size)
         
-        chi2_min_val, chi2_max_val = -100, 10000
-            
-        self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val)
-        self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val)
-        self.ymin  = self.SetValueLimits(args.ymin, chi2_min_val, chi2_max_val)
-        self.ymax  = self.SetValueLimits(args.ymax, chi2_min_val, chi2_max_val)
+        chi2_min_val, chi2_max_val = -1000, 100000
+        def_chi2_min, def_chi2_max = -100, 5000
 
-        if self.xmin > self.xmax:
+        self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, def_chi2_min)
+        self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, def_chi2_max)
+        self.ymin  = self.SetValueLimits(args.ymin, chi2_min_val, chi2_max_val, def_chi2_min)
+        self.ymax  = self.SetValueLimits(args.ymax, chi2_min_val, chi2_max_val, def_chi2_max)
+
+        if self.xmin >= self.xmax:
             print(f"\nERROR: wrong x-value range: {self.xmin} - {self.xmax}")
             exit()
 
-        if self.ymin > self.ymax:
+        if self.ymin >= self.ymax:
             print(f"\nERROR: wrong y-value range: {self.ymin} - {self.ymax}")
             exit()
 
         # For a histogram, x-axis is chi2, y-axis is number of variants
-        if self.xmax == None:
-            self.xmax = 100
-
         if self.plot_type == 'histo':
-            min_cnts, max_cnts = 100, 10000000
+            min_cnts, max_cnts, def_cnts = 100, 10000000, 10000
+            min_bin_size, max_bin_size, def_bin_size = 1, 1000, 5
 
-            self.bin_size = self.SetValueLimits(args.bin_size, 0, 1000)
+            self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, def_bin_size)
 
             self.xmin = 0
-            self.xmax = 100
             self.ymin = 0
-            self.ymax = 10000
 
-            if args.xmax:
-                self.xmax  = self.SetValueLimits(args.xmax, 10, 100000)
-
-            print(f'nfm {self.xmax}')
-
-            if args.ymax:
-                self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts)
-
-            print(f'm {args.ymax} s {self.ymax}')
+            self.xmin  = self.SetValueLimits(args.xmin, 0, chi2_max_val, def_chi2_min)
+            self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts, def_cnts)
         else:
-            if not args.ymin:
-                self.ymin  = self.xmin
-
-            if not args.ymax:
-                self.ymax  = self.xmax
-
-            self.dot_size = self.SetValueLimits(args.dot_size, 1, 20)
+            self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 5)
 
         self.plot_title = ""          # graph title
         if args.title:
@@ -149,7 +133,7 @@ class GraphParameters:
             exit()
 
 
-    def SetValueLimits(self, val, min_val, max_val):
+    def SetValueLimits(self, val, min_val, max_val, default_val):
         """
         Bound a value to a range
         """
@@ -157,7 +141,7 @@ class GraphParameters:
         new_val = val
 
         if val is None or not is_number(val):
-            new_val = min_val
+            new_val = default_val
         else:
             new_val = int(val)
 
