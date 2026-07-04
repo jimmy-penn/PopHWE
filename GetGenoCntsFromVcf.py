@@ -162,6 +162,18 @@ def main():
         print(f"\nERROR: didn't find file {args.vcf_file}\n")
         exit()
 
+    if not os.path.isfile(args.grafanc_file):
+        print(f"\nERROR: didn't find file {args.grafanc_file}\n")
+        exit()
+
+    if not args.vcf_file.lower().endswith(".vcf.gz"):
+        print(f"\nERROR: vcf file {args.vcf_file} is not a .vcf.gz file\n")
+        exit()
+
+    if not args.grafanc_file.lower().endswith(".txt"):
+        print(f"\nERROR: GrafAnc file {args.grafanc_file} is not a .txt file\n")
+        exit()
+
     if args.merge_list and not os.path.isfile(args.merge_list):
         print(f"\nERROR: didn't find file {args.merge_list}\n") 
         exit()

@@ -43,7 +43,7 @@ class GraphParameters:
         self.height = self.SetValueLimits(args.gh, min_graph_size, max_graph_size, def_graph_size)
         
         chi2_min_val, chi2_max_val = -1000, 100000
-        def_chi2_min, def_chi2_max = -100, 5000
+        def_chi2_min, def_chi2_max, def_pchi2_max = -100, 5000, 100
 
         self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, def_chi2_min)
         self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, def_chi2_max)
@@ -61,14 +61,20 @@ class GraphParameters:
         # For a histogram, x-axis is chi2, y-axis is number of variants
         if self.plot_type == 'histo':
             min_cnts, max_cnts, def_cnts = 100, 10000000, 10000
-            min_bin_size, max_bin_size, def_bin_size = 1, 1000, 5
+            min_bin_size, max_bin_size, def_bin_size, def_pchi2_bin_size = 1, 1000, 5, 2
 
-            self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, def_bin_size)
+            if self.xvar == hwe_file.pchi2_column:
+                self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, def_pchi2_bin_size)
+            else:
+                self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, def_bin_size)
 
             self.xmin = 0
             self.ymin = 0
 
-            self.xmin  = self.SetValueLimits(args.xmin, 0, chi2_max_val, def_chi2_min)
+            if self.xvar == hwe_file.pchi2_column:
+                self.xmax  = self.SetValueLimits(args.xmax, 0, chi2_max_val, def_pchi2_max)
+            else:
+                self.xmax  = self.SetValueLimits(args.xmax, 0, chi2_max_val, def_chi2_max)
             self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts, def_cnts)
         else:
             self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 5)
