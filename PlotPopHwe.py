@@ -103,7 +103,17 @@ def PlotHistogram(params, in_file, out_file):
         if x > min_chi and x < max_chi:
             bin_id = int((x * 1.0 - min_chi) / params.bin_size)
             if bin_id < num_bins:
-                bin_cnts[bin_id] += 1
+#                bin_cnts[bin_id] += 1
+                is_het_exc = pf[params.het_column][i+1]
+
+                if params.hetdef_only:
+                    if not is_het_exc:
+                        bin_cnts[bin_id] += 1
+                elif params.hetexc_only:
+                    if is_het_exc:
+                        bin_cnts[bin_id] += 1   
+                else:
+                    bin_cnts[bin_id] += 1
 
     max_bin_id = 0
     max_bin_cnt = 0
@@ -182,15 +192,20 @@ def PlotScatterplot(params, in_file, out_file):
     num_snps = num_rows - 1
     print(f'Reading {num_rows} rows from {in_file}\n')
 
-    # All variants or all except excluded variants when specified
+    # All variants
     xvals = []
     yvals = []
     colors = []
 
     # All heterozygous excess variants when specified
-    xhvals = []
-    yhvals = []
-    hcolors = []
+    xevals = []
+    yevals = []
+    ecolors = []
+
+    # All heterozygous deficit variants when specified
+    xdvals = []
+    ydvals = []
+    dcolors = []
 
     max_xval, max_yval = 0, 0
 
@@ -204,26 +219,38 @@ def PlotScatterplot(params, in_file, out_file):
         if y > max_yval:
             max_yval = y
 
-        if params.show_hetexc:
-            is_het_exc = pf[params.het_column][i+1]
+        is_het_exc = pf[params.het_column][i+1]
+        color = params.dot_color
+
+        if params.hetexc_color:
             if is_het_exc:
-                xhvals.append(x)
-                yhvals.append(y)
-                hcolors.append(params.het_color)
-            else:
-                xvals.append(x)
-                yvals.append(y)
-                colors.append(params.dot_color)
+                color = params.hetexc_color
+                
+        if params.hetdef_color:
+            if not is_het_exc:
+                color = params.hetdef_color
+
+        if params.hetexc_only:
+            if is_het_exc:
+                xevals.append(x)
+                yevals.append(y)
+                ecolors.append(color)
+        elif params.hetdef_only:
+            if not is_het_exc:
+                xdvals.append(x)
+                ydvals.append(y)
+                dcolors.append(color)
         else:
             xvals.append(x)
             yvals.append(y)
-            colors.append(params.dot_color)
+            colors.append(color)
 
     print(f'Total {num_snps} SNPs for plotting.')        
     print(f'x: 0 - {max_xval} y: 0 - {max_yval}')        
         
     ax.scatter(xvals, yvals, s=params.dot_size, c=colors, data=pf)
-    ax.scatter(xhvals, yhvals, s=params.dot_size, c=hcolors, data=pf)
+    ax.scatter(xevals, yevals, s=params.dot_size, c=ecolors, data=pf)
+    ax.scatter(xdvals, ydvals, s=params.dot_size, c=dcolors, data=pf)
     ax.plot([params.xmin, params.xmax],[params.ymin, params.ymax], linewidth=params.line_width, color=params.line_color)
 
     ax.set_xlabel(params.disp_xvar, fontsize=params.axis_lbl_font)
@@ -271,19 +298,22 @@ def main():
     parser.add_argument("--ymax", help="Max y value to plot", metavar="")
     parser.add_argument("--xvar", help="Variable to be plotted on x-axis", metavar="", default="PChi2")
     parser.add_argument("--yvar", help="Variable to be plotted on y-axis", metavar="", default="EChi2")
-    parser.add_argument("--bin_size", help="Bin size for chi", metavar="")
-    parser.add_argument("--chi_dist", help="Show chi2 distribution with df=1", action="store_true")
+    parser.add_argument("--bin_size", help="Bin size for chi square values", metavar="")
+    parser.add_argument("--chi_dist", help="Show expected chi2 distribution with df=1", action="store_true")
     parser.add_argument("--dot_size", help="Dot size (0.5, 1, 3, etc) of the scatter plot", metavar="", default=1)
-    parser.add_argument("--title", help="The title of the scatterplot", metavar="", default="")
-    parser.add_argument("--scatter", help="Show scatterplot", action="store_true")
+    parser.add_argument("--title", help="The title of the plot", metavar="", default="")
+    parser.add_argument("--scatter", help="Show scatterplot. Otherwise show histogram", action="store_true")
     parser.add_argument("--show_bin_cnts", help="Show bins and counts", action="store_true")
-    parser.add_argument("--show_hetexc", help="Highlight HetExc variants", action="store_true")
+    parser.add_argument("--hetexc_only", help="Only show heterozygote excess variants", action="store_true")
+    parser.add_argument("--hetdef_only", help="Only show heterozygote deficiency variants", action="store_true")
+    parser.add_argument("--hetexc_color", help="Highlight heterozygote excess variants", metavar="")
+    parser.add_argument("--hetdef_color", help="Highlight heterozygote deficiency variants", metavar="")
     parser.add_argument("--no_outlier", help="Do not show outliers", action="store_true")
     parser.add_argument("--tight_plot", help="Generate a tight plot without margins", action="store_true")
     parser.add_argument("--nolimits", help="Let python select axis limits", action="store_true")
 
     args = parser.parse_args()
-
+    
     if not os.path.isfile(args.input_file):
         print(f"\nERROR: didn't find file {args.input_file}\n")
         exit()

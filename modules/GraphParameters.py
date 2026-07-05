@@ -50,6 +50,11 @@ class GraphParameters:
         self.ymin  = self.SetValueLimits(args.ymin, chi2_min_val, chi2_max_val, def_chi2_min)
         self.ymax  = self.SetValueLimits(args.ymax, chi2_min_val, chi2_max_val, def_chi2_max)
 
+        # When y min and max are not specified, set them to the same values as x min and max. This is to make sure that the scatter plot is square.
+        if args.ymin == None or args.ymax == None:
+            self.ymin = self.xmin
+            self.ymax = self.xmax   
+
         if self.xmin >= self.xmax:
             print(f"\nERROR: wrong x-value range: {self.xmin} - {self.xmax}")
             exit()
@@ -86,7 +91,10 @@ class GraphParameters:
         self.show_bin_cnts = args.show_bin_cnts
         self.chi_dist = args.chi_dist
         self.het_column = hwe_file.het_column
-        self.show_hetexc = args.show_hetexc
+        self.hetexc_only = args.hetexc_only
+        self.hetdef_only = args.hetdef_only
+        self.hetexc_color = args.hetexc_color
+        self.hetdef_color = args.hetdef_color   
         self.title = args.title
         self.tight_plot = args.tight_plot
         self.nolimits = args.nolimits
@@ -96,7 +104,6 @@ class GraphParameters:
         self.title_font = 14
 
         self.dot_color = 'black'
-        self.het_color = 'purple'
         self.line_color = 'gray'
         self.line_width = 0.8
         self.tick_lbl_size = 9
@@ -165,22 +172,34 @@ class GraphParameters:
         """
 
         print(f"\nParameters:")
-        print(f"\tPlot type:   {self.plot_type}")
-        print(f"\tPlot size:   {self.width} x {self.height}")
+        print(f"\tPlot type:    {self.plot_type}")
+        print(f"\tPlot size:    {self.width} x {self.height}")
         if self.plot_type == 'histo':
-            print(f"\tScore:       {self.xvar}")
-            print(f"\tShow range:  {self.xmin} - {self.xmax}")
-            print(f"\tMax Count:   {self.ymax}")
-            print(f"\tBin size:    {self.bin_size}")
+            print(f"\tScore:        {self.xvar}")
+            print(f"\tShow range:   {self.xmin} - {self.xmax}")
+            print(f"\tMax Count:    {self.ymax}")
+            print(f"\tBin size:     {self.bin_size}")
 
             if self.chi_dist:
                 print()
                 print(f"\tShow Chi-square distribution: yes")
         else:
-            print(f"\tX-variable:  {self.xvar}")
-            print(f"\tY-variable:  {self.yvar}")
-            print(f"\tX-range:     {self.xmin} - {self.xmax}")
-            print(f"\tY-range:     {self.ymin} - {self.ymax}")
+            print(f"\tX-variable:   {self.xvar}")
+            print(f"\tY-variable:   {self.yvar}")
+            print(f"\tX-range:      {self.xmin} - {self.xmax}")
+            print(f"\tY-range:      {self.ymin} - {self.ymax}")
+            print(f"\tDot size:     {self.dot_size}")
+            if self.hetexc_color:
+                print(f"\tHetExc color: {self.hetexc_color}")
 
-            print(f"\tDot size:    {self.dot_size}")
+            if self.hetdef_color:
+                print(f"\tHetDef color: {self.hetdef_color}")
+
+            if self.hetexc_only:
+                print(f"\tShow only heterozygote excess variants: yes")
+ 
+            if self.hetdef_only:
+                print(f"\tShow only heterozygote deficient variants: yes")
+
+                
  

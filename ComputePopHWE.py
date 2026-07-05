@@ -32,11 +32,13 @@ def main():
     parser.add_argument("geno_cnt_file", help="Name (with full path) of the genotype count file")
     parser.add_argument("output_file", help="Name of the output file")
     parser.add_argument("--min_pop_size", help="Minimum population size for chi-square test", metavar="", type=int, default=10)
+    parser.add_argument("--min_MAF", help="Minimum minor allele frequency", metavar="", type=float, default=0.01)
 
     args = parser.parse_args()
     st_time = time.time()
 
     min_pop_size = args.min_pop_size
+    min_maf = args.min_MAF
 
     geno_cnt_file = args.geno_cnt_file
     output_file = args.output_file
@@ -118,7 +120,11 @@ def main():
                         Sab += Eiab
                         Sbb += Eibb       
 
-            if Naa + Nab + Nbb >= min_pop_size and p * q > 0.001:
+            num_tot_smps = Naa + Nab + Nbb
+            tot_p = (2.0 * Naa + Nab) / (2 * num_tot_smps) if num_tot_smps > 0 else 1
+            maf = min(tot_p, 1 - tot_p)
+
+            if num_tot_smps >= min_pop_size and maf > min_maf:
                 chi2, Enaa, Enab, Enbb = CalcHwe(Naa, Nab, Nbb)
                 eChi, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
                 pChi = 0
