@@ -6,10 +6,14 @@ from modules.VcfSamples import VcfSamples
 class SampleAncestryGroups:
     """
     Assign VCF samples to ancestry groups derived from a GrafAnc output file
+
+    2026-07-09: Revised to also take a population file with pre-assigned population groups for samples. 
+    The population file can be any tab-delimited text file with the following columns: Sample, Population
     """
 
     def __init__(self, vcf_smps, args):
-        self.grafanc_file = args.grafanc_file  # Name of the GrafAnc output file
+        self.smp_pop_file = args.grafanc_file  # Name of the Sample Population file
+        self.is_grafanc = True                 # Flag indicating if the sample pop file is from GrafAnc
         self.use_sub_anc = args.use_sub_anc    # Whether to assign subjects to subcontiental groups or not
         self.use_groups = args.use_groups      # Whether the current ancestry grouping is acceptable or not
         self.merge_file = args.merge_list      # File to contain ancestry group merge list
@@ -38,10 +42,10 @@ class SampleAncestryGroups:
         self.anc_group_sizes = {}      # Number of samples assigned to each ancestry group 
         self.num_anc_groups = 0        # Number of ancestry groups 
 
-        self.anc_id_column = []        # Index of ancestry group ID column in GrafAnc output file
-        self.raw_pe_column = []        # Index of RawPe column in GrafAnc output file
-        self.raw_pf_column = []        # Index of RawPf column in GrafAnc output file
-        self.raw_pa_column = []        # Index of RawPa column in GrafAnc output file
+        self.anc_id_col = -1           # Index of ancestry group ID column in GrafAnc output file
+        self.raw_pe_col = -1           # Index of RawPe column in GrafAnc output file
+        self.raw_pf_col = -1           # Index of RawPf column in GrafAnc output file
+        self.raw_pa_col = -1           # Index of RawPa column in GrafAnc output file
 
         # Need to find ancestry groups quickly for samples
         # A dict from sample ID to ancestry group ID would be convenient
@@ -57,6 +61,8 @@ class SampleAncestryGroups:
         if num_mix_groups > 1 and num_mix_groups <= 100:
             self.num_mix_groups = num_mix_groups
             self.pct_anc_bin = int(100.0/self.num_mix_groups)
+
+        self.CheckSamplePopFile()
 
         self.ReadSampleGrafAncScores()
         self.GetSampleAncestryGroups()
@@ -90,30 +96,41 @@ class SampleAncestryGroups:
     def GetSampleAncestryGroups(self):
         """
         Read or derive sample ancestry groups from GrafAnc output file
+
+        If it is not a GrafAnc output file, it assigns ancestry groups read from the population column.  
         """
 
         self.smp_anc_ids = []
 
-        self.anc_id_col = self.GetIndexGivenGaColumnName("AncGroupID")
-        self.raw_pe_col = self.GetIndexGivenGaColumnName("RawPe")
-        self.raw_pf_col = self.GetIndexGivenGaColumnName("RawPf")
-        self.raw_pa_col = self.GetIndexGivenGaColumnName("RawPa")
+        if self.is_grafanc:
+            self.anc_id_col = self.GetIndexGivenGaColumnName("AncGroupID")
+            self.raw_pe_col = self.GetIndexGivenGaColumnName("RawPe")
+            self.raw_pf_col = self.GetIndexGivenGaColumnName("RawPf")
+            self.raw_pa_col = self.GetIndexGivenGaColumnName("RawPa")
 
-        if self.anc_id_col < 0:
-            print(f"\nERROR: didn't find AncGroupID column in {self.grafanc_file}\n")
-            exit()
+            if self.anc_id_col < 0:
+                print(f"\nERROR: didn't find AncGroupID column in {self.smp_pop_file}\n")
+                exit()
 
         ga_anc_id = 0
         for smp_no in range(self.num_vcf_samples):
             smp_id = self.vcf_samples[smp_no]
-            scores = self.smp_ga_scores.get(smp_id)
 
-            if scores:
-                ga_anc_id = self.AssignAncestryGroupsUsingScores(scores)
+            if smp_id in self.smp_ga_scores:
+                scores = self.smp_ga_scores.get(smp_id)
+
+                if scores:
+                    if self.is_grafanc:
+                        ga_anc_id = self.AssignAncestryGroupsUsingScores(scores)
+                    else:
+                        # If it is not a GrafAnc output file, directly assign ancestry group read from the population column
+                        ga_anc_id = scores[self.anc_id_col]
+
+                    self.smp_anc_ids.append(ga_anc_id)
+                else:
+                    self.no_anc_samples.append(smp_id)
             else:
-                self.no_anc_samples.append(smp_id)
-
-            self.smp_anc_ids.append(ga_anc_id)
+                self.no_anc_samples.append(smp_id)                      
 
 
     def MergeAncestryGroups(self):
@@ -152,11 +169,15 @@ class SampleAncestryGroups:
                     print(f"\nERROR: Invalid line in merge list file {self.merge_file}: {line}\n")
                     exit()  
 
-                if not cols[1].strip().isdigit():
-                    print(f"\nERROR: Invalid ancestry group ID in merge list file {self.merge_file}: {cols[1]}\n")
-                    exit() 
+                if self.is_grafanc:
+                    if not cols[1].strip().isdigit():
+                        print(f"\nERROR: Invalid ancestry group ID in merge list file {self.merge_file}: {cols[1]}\n")
+                        exit() 
 
-                main_anc_id  = int(cols[1])
+                main_anc_id  = cols[1]
+                if self.is_grafanc:
+                    main_anc_id  = int(cols[1])
+
                 if not main_anc_id in self.all_anc_groups:
                     print(f"\nERROR: Ancestry group {main_anc_id} in merge list file {self.merge_file} is not found in the current ancestry groups\n")
                     exit()     
@@ -169,12 +190,15 @@ class SampleAncestryGroups:
                     if mrg_anc_str.strip() == "":
                         continue
 
-                    if not mrg_anc_str.strip().isdigit():
-                        print(f"\nERROR: Invalid ancestry group ID in merge list file {self.merge_file}: {mrg_anc_str}\n")
-                        exit() 
+                    if self.is_grafanc:
+                        if not mrg_anc_str.strip().isdigit():
+                            print(f"\nERROR: Invalid ancestry group ID in merge list file {self.merge_file}: {mrg_anc_str}\n")
+                            exit() 
 
-                    mrg_anc = int(mrg_anc_str.strip())
-
+                    mrg_anc = mrg_anc_str.strip()
+                    if self.is_grafanc:
+                        mrg_anc = int(mrg_anc_str.strip())
+    
                     if not mrg_anc in self.all_anc_groups:
                         print(f"\nERROR: Ancestry group {mrg_anc} in merge list file {self.merge_file} is not found in the current ancestry groups\n")
                         exit()  
@@ -244,14 +268,58 @@ class SampleAncestryGroups:
         return smp_anc_id
 
 
+    def CheckSamplePopFile(self):
+        """
+        Check the sample population file and decide if it is a GrafAnc output file
+        """
+
+        with open(self.smp_pop_file, 'r') as mfh:
+            try:
+                header = mfh.readline().strip()
+            except ValueError as error:
+                print(f'\nERROR: failed to read header from {self.smp_pop_file}: {error}\n')
+                exit()
+            except Exception as error:
+                print(f'\nError: {error}\n')
+                exit()
+                
+            columns = header.split("\t")
+            num_columns = len(columns)
+            if not columns[0].lower().startswith("sample"):
+                print(f"\nERROR: Invalid header in sample population file {self.smp_pop_file}: {header}\n")
+                print(f"The first column should be a Sample column.\n")
+                exit()
+
+            if num_columns > 26 and columns[2] == "GD1" and columns[-1] == "AncGroupID":
+                self.is_grafanc = True
+            else:
+                self.is_grafanc = False
+
+                for col_no in range(1, num_columns):
+                    if columns[col_no].lower().startswith("population"):
+                        # Ignore the first column, which is Sample ID, so subtract 1 to get the index in the scores array
+                        self.anc_id_col = col_no-1  
+                        break   
+
+                if self.anc_id_col < 0:
+                    print(f"\nERROR: Invalid header in sample population file {self.smp_pop_file}: {header}\n")
+                    print(f"Cannot find a Population column.\n")
+                    exit()  
+
+        mfh.close()                               
+
+
     def ReadSampleGrafAncScores(self):
         """
-        Read sample GrafAnc scores and save them into memory
+        Read sample GrafAnc scores and save them into memory.
+
+        If the sample population file is not a GrafAnc output file, it saves some junk into memory, 
+        but it will not be used later.
         """
 
-        print(f"Reading sample ancestry groups from {self.grafanc_file}")
+        print(f"Reading sample ancestry groups from {self.smp_pop_file}")
 
-        with open(self.grafanc_file, 'rt') as afh:
+        with open(self.smp_pop_file, 'rt') as afh:
             line_no = 0
             variant_count = 0
 
@@ -331,6 +399,7 @@ class SampleAncestryGroups:
 
         print(f'\nSummary of sample ancestry groups')
         print(f'\tSamples in VCF:     {self.num_vcf_samples}')
+        print(f'\tFile is GrafAnc:    {self.is_grafanc}')
         print(f'\tSamples in GrafAnc: {self.num_ga_samples}')
         print(f'\tTotal {self.num_anc_groups} ancestry groups:')
 
