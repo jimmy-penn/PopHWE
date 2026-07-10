@@ -131,9 +131,7 @@ def main():
                 if Saa * Sab * Sbb > 0:
                     pChi = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
 
-                is_het_exc = 0
-                if Nab > Enab:
-                    is_het_exc = 1
+                is_het_exc = True if Nab > Enab else False
 
                 save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4f}"
                 save_lines.append(save_line)

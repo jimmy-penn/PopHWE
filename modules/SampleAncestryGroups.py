@@ -28,6 +28,7 @@ class SampleAncestryGroups:
         self.smp_anc_ids = []          # List of ancestry groups (indices) assigned to every sample
         self.num_vcf_samples = 0       # Number of samples in the VcfSamples object
         self.num_ga_samples = 0        # Number of samples in the GrafAnc output file
+        self.num_rm_samples = 0        # Number of samples excluded for HWE test
 
         self.no_anc_samples = []       # Vcf samples not found in GrafAnc output file
         self.no_vcf_samples = []       # Samples in GrafAnc file but not in the VCF
@@ -174,13 +175,25 @@ class SampleAncestryGroups:
                         print(f"\nERROR: Invalid ancestry group ID in merge list file {self.merge_file}: {cols[1]}\n")
                         exit() 
 
-                main_anc_id  = cols[1]
+                is_rm_anc = False
+                main_anc_id  = cols[1].strip()
                 if self.is_grafanc:
                     main_anc_id  = int(cols[1])
-
-                if not main_anc_id in self.all_anc_groups:
-                    print(f"\nERROR: Ancestry group {main_anc_id} in merge list file {self.merge_file} is not found in the current ancestry groups\n")
-                    exit()     
+                    if main_anc_id == 0:
+                        is_rm_anc = True
+                else:
+                    if main_anc_id.lower() == "none" or main_anc_id.lower() == "remove" or main_anc_id.lower() == "0":
+                        is_rm_anc = True
+                    
+                if is_rm_anc:
+                    if self.is_grafanc:
+                        main_anc_id = 0
+                    else:
+                        main_anc_id = '0'
+                else:
+                    if not main_anc_id in self.all_anc_groups:
+                        print(f"\nERROR: Ancestry group {main_anc_id} in merge list file {self.merge_file} is not found in the current ancestry groups\n")
+                        exit()     
 
                 mrg_ancs = []
 
@@ -369,10 +382,17 @@ class SampleAncestryGroups:
             anc_id = self.smp_anc_ids[i]
             smp_anc_grps[smp_id] = anc_id
 
-            if anc_id in self.anc_group_sizes:
-                self.anc_group_sizes[anc_id] += 1
+            is_rm_anc = False
+            if (self.is_grafanc and anc_id == 0) or (not self.is_grafanc and anc_id == '0'):
+                is_rm_anc = True
+
+            if is_rm_anc:
+                self.num_rm_samples += 1
             else:
-                self.anc_group_sizes[anc_id] = 1
+                if anc_id in self.anc_group_sizes:
+                    self.anc_group_sizes[anc_id] += 1
+                else:
+                    self.anc_group_sizes[anc_id] = 1
 
         self.all_anc_groups = sorted(self.anc_group_sizes)
         self.num_anc_groups = len(self.all_anc_groups)
@@ -388,7 +408,9 @@ class SampleAncestryGroups:
         for smp_no in range(self.num_vcf_samples):
             smp_id = self.vcf_samples[smp_no]
             anc_id = self.smp_anc_ids[smp_no]
-            anc_pos = anc_grp_to_pos[anc_id]
+            anc_pos = -1
+            if anc_id in anc_grp_to_pos:
+                anc_pos = anc_grp_to_pos[anc_id]
             self.smp_anc_group_pos.append(anc_pos)
 
 
@@ -399,6 +421,7 @@ class SampleAncestryGroups:
 
         print(f'\nSummary of sample ancestry groups')
         print(f'\tSamples in VCF:     {self.num_vcf_samples}')
+        print(f'\tSamples excluded:   {self.num_rm_samples}')
         print(f'\tFile is GrafAnc:    {self.is_grafanc}')
         print(f'\tSamples in GrafAnc: {self.num_ga_samples}')
         print(f'\tTotal {self.num_anc_groups} ancestry groups:')
