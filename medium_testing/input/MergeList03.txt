@@ -1,0 +1,5 @@
+Ancestries	MergeTo
+Pop103	Pop103
+Pop105,Pop107,Pop108	Pop107
+Pop305,Pop306,Pop307,Pop308	Pop304
+Pop503	Pop502

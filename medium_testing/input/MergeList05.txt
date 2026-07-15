@@ -1,0 +1,5 @@
+Ancestries	MergeTo
+603	602
+800,107	0
+601	0
+
