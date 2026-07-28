@@ -22,13 +22,14 @@ class HweResultFile:
         self.chi2_column = "Chi2"
         self.echi2_column = "EChi2"
         self.pchi2_column = "PChi2"
+        self.zval_column = "z-value"
         self.het_column = "HetExc"
 
         self.is_valid = True
         self.err_msg = ""
         self.CheckFileFormat()
 
-        self.chi_columns = [self.chi2_column, self.echi2_column, self.pchi2_column]
+        self.chi_columns = [self.chi2_column, self.echi2_column, self.pchi2_column, self.zval_column]
 
     def CheckFileFormat(self):
         """
@@ -45,12 +46,13 @@ class HweResultFile:
         vars = header.split(self.delimiter)
         num_vars = len(vars)
 
-        exp_col_num = 11
+        exp_col_num = 12
         if num_vars != exp_col_num \
             or vars[0].strip().upper() != self.id_column.upper() \
-            or vars[-3].strip().upper() != self.chi2_column.upper() \
-            or vars[-2].strip().upper() != self.echi2_column.upper() \
-            or vars[-1].strip().upper() != self.pchi2_column.upper() :
+            or vars[-4].strip().upper() != self.chi2_column.upper() \
+            or vars[-3].strip().upper() != self.echi2_column.upper() \
+            or vars[-2].strip().upper() != self.pchi2_column.upper() \
+            or vars[-1].strip().upper() != self.zval_column.upper() :
 
             self.is_valid = False
             self.err_msg += f"Error in #columns or 1st or last 3 column headers\n"
@@ -69,14 +71,16 @@ class HweResultFile:
                 f'  {self.chi2_column}\n' + \
                 f'  {self.echi2_column}\n' + \
                 f'  {self.pchi2_column}\n' + \
+                f'  {self.zval_column}\n' + \
                 f'\nError message: {self.err_msg}\n'
 
             print(err_msg)
             exit()
 
         self.id_column    = vars[0].strip()
-        self.chi2_column  = vars[-3].strip()
-        self.echi2_column = vars[-2].strip()
-        self.pchi2_column = vars[-1].strip()
+        self.chi2_column  = vars[-4].strip()
+        self.echi2_column = vars[-3].strip()
+        self.pchi2_column = vars[-2].strip()
+        self.zval_column  = vars[-1].strip()
 
         file.close()

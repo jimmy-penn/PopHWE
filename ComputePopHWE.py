@@ -1,6 +1,7 @@
 import sys
 import argparse
 import time
+import math
 
 from modules.GenotypeCounts import GenotypeCounts
 
@@ -53,7 +54,7 @@ def main():
         print(f"ERROR: cannot create output file {output_file} for writing!")
         exit()  
 
-    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tHetExc\tChi2\tEChi2\tPChi2"
+    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tHetExc\tChi2\tEChi2\tPChi2\tz-value"
     out_file.write(out_header + "\n")
 
     # Input file might be very large. HWE results are calculated line by line and saved to output file 
@@ -128,12 +129,18 @@ def main():
                 chi2, Enaa, Enab, Enbb = CalcHwe(Naa, Nab, Nbb)
                 eChi, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
                 pChi = 0
+                zVal = 0
                 if Saa * Sab * Sbb > 0:
                     pChi = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
+                    zVal = math.sqrt(pChi)
 
-                is_het_exc = True if Nab > Enab else False
 
-                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4f}"
+                is_het_exc = True 
+                if Nab < Enab:
+                    is_het_exc = False
+                    zVal *= -1
+
+                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4f}\t{zVal:.4f}"
                 save_lines.append(save_line)
                 num_lines_in_block += 1
 

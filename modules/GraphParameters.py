@@ -27,8 +27,6 @@ class GraphParameters:
 
         self.width = 14           # width of graph in inches
         self.height = 14          # height of graph in inches
-
-        self.tick_lbl_size = 8    # tick label font size
         
         if args.scatter:
             self.plot_type = "scatter"
@@ -43,17 +41,44 @@ class GraphParameters:
         self.height = self.SetValueLimits(args.gh, min_graph_size, max_graph_size, def_graph_size)
         
         chi2_min_val, chi2_max_val = -1000, 100000
-        def_chi2_min, def_chi2_max, def_pchi2_max = -100, 5000, 100
+        default_chi2_min, default_chi2_max   = -50, 1000
+        default_pchi2_min, default_pchi2_max = -20, 200
+        default_zval_min, default_zval_max   = -10, 10
 
-        self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, def_chi2_min)
-        self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, def_chi2_max)
-        self.ymin  = self.SetValueLimits(args.ymin, chi2_min_val, chi2_max_val, def_chi2_min)
-        self.ymax  = self.SetValueLimits(args.ymax, chi2_min_val, chi2_max_val, def_chi2_max)
-
+        self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, default_chi2_min)
+        self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, default_chi2_max)
+        self.ymin  = self.SetValueLimits(args.ymin, chi2_min_val, chi2_max_val, default_chi2_min)
+        self.ymax  = self.SetValueLimits(args.ymax, chi2_min_val, chi2_max_val, default_chi2_max)
+        
         # When y min and max are not specified, set them to the same values as x min and max. This is to make sure that the scatter plot is square.
         if args.ymin == None or args.ymax == None:
             self.ymin = self.xmin
             self.ymax = self.xmax   
+
+        # For a histogram, x-axis is chi2, y-axis is number of variants
+        if self.plot_type == 'histo':
+            min_cnts, max_cnts, default_cnts = 100, 10000000, 10000
+            min_bin_size, max_bin_size, default_chi2_bin_size, default_pchi2_bin_size = 0.01, 1000, 5, 1
+
+            default_bin_size = default_chi2_bin_size 
+            default_min, default_max = default_chi2_min, default_chi2_max
+
+            self.xmin, self.ymin = 0, 0     # Chi2 values and counts are all positive 
+
+            if self.xvar == hwe_file.zval_column:
+                # z-values can be negative
+                self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, default_min)
+                default_min = default_zval_min
+                default_max = default_zval_max
+            elif self.xvar == hwe_file.pchi2_column:
+                default_min = default_pchi2_min
+                default_max = default_pchi2_max
+            
+            self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, default_bin_size)
+            self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, default_max)
+            self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts, default_cnts)
+        else:
+            self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 5)
 
         if self.xmin >= self.xmax:
             print(f"\nERROR: wrong x-value range: {self.xmin} - {self.xmax}")
@@ -62,27 +87,6 @@ class GraphParameters:
         if self.ymin >= self.ymax:
             print(f"\nERROR: wrong y-value range: {self.ymin} - {self.ymax}")
             exit()
-
-        # For a histogram, x-axis is chi2, y-axis is number of variants
-        if self.plot_type == 'histo':
-            min_cnts, max_cnts, def_cnts = 100, 10000000, 10000
-            min_bin_size, max_bin_size, def_bin_size, def_pchi2_bin_size = 1, 1000, 5, 2
-
-            if self.xvar == hwe_file.pchi2_column:
-                self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, def_pchi2_bin_size)
-            else:
-                self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, def_bin_size)
-
-            self.xmin = 0
-            self.ymin = 0
-
-            if self.xvar == hwe_file.pchi2_column:
-                self.xmax  = self.SetValueLimits(args.xmax, 0, chi2_max_val, def_pchi2_max)
-            else:
-                self.xmax  = self.SetValueLimits(args.xmax, 0, chi2_max_val, def_chi2_max)
-            self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts, def_cnts)
-        else:
-            self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 5)
 
         self.plot_title = ""          # graph title
         if args.title:
@@ -98,20 +102,18 @@ class GraphParameters:
         self.title = args.title
         self.tight_plot = args.tight_plot
         self.nolimits = args.nolimits
+        self.title_size = args.title_size
+        self.axis_lbl_size = args.axis_lbl_size
 
         # Currently not user-speficied
-        self.axis_lbl_font = 12
-        self.title_font = 14
-
         self.dot_color = 'black'
         self.line_color = 'gray'
         self.line_width = 0.8
         self.tick_lbl_size = 9
 
-
     def GetAxisDisplayValues(self, var, hwe_file):
         """
-        Get display values on axises
+        Get display values on an axis
         """
 
         disp_var = var
@@ -156,7 +158,7 @@ class GraphParameters:
         if val is None or not is_number(val):
             new_val = default_val
         else:
-            new_val = int(val)
+            new_val = float(val)
 
         if new_val < min_val:
             new_val = min_val

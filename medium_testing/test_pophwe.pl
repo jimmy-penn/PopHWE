@@ -26,6 +26,7 @@ if (@ARGV < 1) {
     print "Usage $script <manifest> [is_update_baseline] [is_debug]\n\n";
     exit;
 }
+my $python = "/c/Users/yumij/AppData/Local/Python/bin/python";
 
 my $manifest = $ARGV[0];
 my $updateBaseline = @ARGV > 1 ? $ARGV[1] : 0;
@@ -65,7 +66,7 @@ for my $testNo (0 .. $#allTests) {
 
     my $testId = $testNo + 1;
 
-    my $fullCmd = "python $pophweDir/$testCmd";
+    my $fullCmd = "$python $pophweDir/$testCmd";
 
     print "Running Test No. $testId: $testName\n\tCommand: $fullCmd\n";
 
@@ -105,7 +106,7 @@ sub RunTest
     my ($cmd, $testOutFile, $expOutFile, $expMsg, $testOutDir) = @_;
 
     my @testT1 = gettimeofday;
-    my $fullCmd = "python $pophweDir/$cmd";
+    my $fullCmd = "$python $pophweDir/$cmd";
 
     my $fullTestOutFile = "$testOutDir/$testOutFile";
     my $fullBaselineFile = "$baselineDir/$testOutFile";

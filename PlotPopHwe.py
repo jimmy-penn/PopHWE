@@ -158,13 +158,14 @@ def PlotHistogram(params, in_file, out_file):
         print(f'Total {tot_cnts} SNPs in {num_bins} bins')
         ax.plot(x_pdf, y_pdf, linewidth=params.line_width, color="red")
 
-    ax.set_xlabel(params.disp_xvar, fontsize=params.axis_lbl_font)
-    ax.set_ylabel("Number of SNPs", fontsize=params.axis_lbl_font)
+    ax.set_xlabel(params.disp_xvar, fontsize=params.axis_lbl_size)
+    ax.set_ylabel("Number of SNPs", fontsize=params.tick_lbl_size)
 
-    ax.tick_params(axis='x', labelsize=params.tick_lbl_size)
+    ax.tick_params(axis='x', labelsize=params.axis_lbl_size)
 
     if params.title != "":
-        ax.set_title(params.title, fontsize=params.title_font)
+        print(f"setting font to {params.title_size}")
+        ax.set_title(params.title, fontsize=params.title_size)
 
     try:
         plt.savefig(out_file)
@@ -253,13 +254,13 @@ def PlotScatterplot(params, in_file, out_file):
     ax.scatter(xdvals, ydvals, s=params.dot_size, c=dcolors, data=pf)
     ax.plot([params.xmin, params.xmax],[params.ymin, params.ymax], linewidth=params.line_width, color=params.line_color)
 
-    ax.set_xlabel(params.disp_xvar, fontsize=params.axis_lbl_font)
-    ax.set_ylabel(params.disp_yvar, fontsize=params.axis_lbl_font)
+    ax.set_xlabel(params.disp_xvar, fontsize=params.axis_lbl_size)
+    ax.set_ylabel(params.disp_yvar, fontsize=params.axis_lbl_size)
     ax.set_xlim(params.xmin, params.xmax)
     ax.set_ylim(params.ymin, params.ymax)
 
     if params.title != "":
-        ax.set_title(params.title, fontsize=params.title_font)
+        ax.set_title(params.title, fontsize=params.title_size)
 
     try:
         plt.savefig(out_file)
@@ -302,6 +303,8 @@ def main():
     parser.add_argument("--chi_dist", help="Show expected chi2 distribution with df=1", action="store_true")
     parser.add_argument("--dot_size", help="Dot size (0.5, 1, 3, etc) of the scatter plot", metavar="", default=1)
     parser.add_argument("--title", help="The title of the plot", metavar="", default="")
+    parser.add_argument("--title_size", help="Font size of the title, default 18", metavar="", default=18)
+    parser.add_argument("--axis_lbl_size", help="Font size of the axis lables, default 12", metavar="", default=12)
     parser.add_argument("--scatter", help="Show scatterplot. Otherwise show histogram", action="store_true")
     parser.add_argument("--show_bin_cnts", help="Show bins and counts", action="store_true")
     parser.add_argument("--hetexc_only", help="Only show heterozygote excess variants", action="store_true")

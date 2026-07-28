@@ -12,7 +12,6 @@
 # File expected: If the output file is expected to be generated (Y = Yes)
 # Output Msg:    Expected key string included in STDOUT output message
 
-# Test ComputePopHWE.py
 #END
 
 
@@ -41,7 +40,7 @@ Calc HWE Anc 1k mrg 10 | ComputePopHWE.py | output/TgpAncSnps1kMrg10Cnts.txt | |
 Calc HWE Anc 1k mrg 10 MAF 0.05 | ComputePopHWE.py | output/TgpAncSnps1kMrg10Cnts.txt | | --min_MAF 0.05 | TgpAncSnps1kMrg10PchiMaf05.txt | Y | Saved total
 Calc HWE chr22 5k | ComputePopHWE.py | output/TgpChr22Snps5kCnts.txt | | | TgpChr22Snps5kMaf01.txt | Y | Saved total
 Calc HWE chr22 5k MAF .05 | ComputePopHWE.py | output/TgpChr22Snps5kCnts.txt | | --min_MAF 0.05 | TgpChr22Snps5kMaf05.txt | Y | Saved total
-Calc HWE geno cnts check ancs smp pops | ComputePopHWE.py | output/TgpAncSnps1kCntsSp.txt | | | TgpAncSnps1kCntsSpPChi.txt | Y | Saved total
+Calc HWE geno cnts check ancs smp pops | ComputePopHWE.py | output/TgpAncSnps1kCntsSp.txt | | | TgpAncSnps1kMrg10Hwe.txt | Y | Saved total
 
 
 ### Test PlotPopHwe.py
@@ -55,4 +54,5 @@ Plot chr22 5k PChi histo |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf01.txt | | 
 Plot chr22 5k Maf 05 PChi histo |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf05.txt | | --ymax 200 | TgpChr22Snps5kMaf05Pchi.png | Y | Saved results
 Plot chr22 5k PChi histo hetexc |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf05.txt | | --hetexc_only --ymax 200 | TgpChr22Snps5kMaf01PchiHE.png | Y | Saved results
 Plot chr22 5k PChi histo hetdef |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf05.txt | | --hetdef_only --ymax 200 | TgpChr22Snps5kMaf01PchiHD.png | Y | Saved results
-Plot geno cnts check ancs smp pops PChi histo |  PlotPopHwe.py |  output/TgpAncSnps1kCntsSpPChi.txt | | | TgpAncSnps1kSpPChi.png | Y | Saved results
+Plot geno cnts check ancs smp pops PChi histo |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | | TgpAncSnps1kSpPChi.png | Y | Saved results
+Plot geno cnts check ancs smp pops Zval histo |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | --xvar z-value --xmin -5 --xmax 5 --ymax 100 --bin_size 0.1 --gw 16 --gh 8 --title "TGP chr22 distribution of z-values" --title_size 24 --axis_lbl_size 18 | TgpAncSnps1kSpZval.png | Y | Saved results
