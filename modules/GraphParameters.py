@@ -109,7 +109,7 @@ class GraphParameters:
         self.dot_color = 'black'
         self.line_color = 'gray'
         self.line_width = 0.8
-        self.tick_lbl_size = 9
+        self.tick_lbl_size = 12
 
     def GetAxisDisplayValues(self, var, hwe_file):
         """

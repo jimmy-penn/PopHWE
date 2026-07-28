@@ -164,7 +164,6 @@ def PlotHistogram(params, in_file, out_file):
     ax.tick_params(axis='x', labelsize=params.axis_lbl_size)
 
     if params.title != "":
-        print(f"setting font to {params.title_size}")
         ax.set_title(params.title, fontsize=params.title_size)
 
     try:
