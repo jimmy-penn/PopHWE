@@ -38,6 +38,14 @@ def func(x, a, b):
 
     return  y
   
+def StandardNormalPdf(x):
+    y = 0
+
+    if x > -100 and x < 100:
+        y = (math.exp(-1 * x**2 / 2)) / (math.sqrt(2 * math.pi))
+        
+    return  y
+
 def ChiPdf(x):
     y = 0
 
@@ -136,7 +144,8 @@ def PlotHistogram(params, in_file, out_file):
     cnts = np.array(bin_cnts) 
     
     ax.hist(bins[:-1], bins, weights=cnts, rwidth=1.0)
-    if params.chi_dist:
+    
+    if params.chi_dist or params.norm_dist:
         x_pdf = []
         y_pdf = []
 
@@ -150,8 +159,12 @@ def PlotHistogram(params, in_file, out_file):
 
             if bin_st > params.xmin and bin_st < params.xmax:
                 x = bin_st
-                y = ChiPdf(x) * num_snps * params.bin_size
     
+                if params.chi_dist:
+                    y = ChiPdf(x) * num_snps * params.bin_size
+                else:
+                    y = StandardNormalPdf(x) * num_snps * params.bin_size
+
                 x_pdf.append(x-params.bin_size*0) # Why shifting to right by two bins
                 y_pdf.append(y)
 
@@ -300,6 +313,7 @@ def main():
     parser.add_argument("--yvar", help="Variable to be plotted on y-axis", metavar="", default="EChi2")
     parser.add_argument("--bin_size", help="Bin size for chi square values", metavar="")
     parser.add_argument("--chi_dist", help="Show expected chi2 distribution with df=1", action="store_true")
+    parser.add_argument("--norm_dist", help="Show expected normal distribution for z-values", action="store_true")
     parser.add_argument("--dot_size", help="Dot size (0.5, 1, 3, etc) of the scatter plot", metavar="", default=1)
     parser.add_argument("--title", help="The title of the plot", metavar="", default="")
     parser.add_argument("--title_size", help="Font size of the title, default 18", metavar="", default=18)

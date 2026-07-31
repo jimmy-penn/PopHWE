@@ -44,6 +44,7 @@ class GraphParameters:
         default_chi2_min, default_chi2_max   = -50, 1000
         default_pchi2_min, default_pchi2_max = -20, 200
         default_zval_min, default_zval_max   = -10, 10
+        default_zval_bin = 0.1
 
         self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, default_chi2_min)
         self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, default_chi2_max)
@@ -70,6 +71,7 @@ class GraphParameters:
                 self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, default_min)
                 default_min = default_zval_min
                 default_max = default_zval_max
+                default_bin_size = default_zval_bin 
             elif self.xvar == hwe_file.pchi2_column:
                 default_min = default_pchi2_min
                 default_max = default_pchi2_max
@@ -77,6 +79,9 @@ class GraphParameters:
             self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, default_bin_size)
             self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, default_max)
             self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts, default_cnts)
+
+#            print(f"bin {self.bin_size}")
+#            exit()
         else:
             self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 5)
 
@@ -94,6 +99,7 @@ class GraphParameters:
 
         self.show_bin_cnts = args.show_bin_cnts
         self.chi_dist = args.chi_dist
+        self.norm_dist = args.norm_dist
         self.het_column = hwe_file.het_column
         self.hetexc_only = args.hetexc_only
         self.hetdef_only = args.hetdef_only
@@ -110,6 +116,12 @@ class GraphParameters:
         self.line_color = 'gray'
         self.line_width = 0.8
         self.tick_lbl_size = 12
+
+        if self.xvar in (hwe_file.chi2_column, hwe_file.echi2_column, hwe_file.pchi2_column):
+            self.norm_dist = False
+
+        if self.xvar in (hwe_file.zval_column):
+            self.chi_dist = False
 
     def GetAxisDisplayValues(self, var, hwe_file):
         """
@@ -185,6 +197,9 @@ class GraphParameters:
             if self.chi_dist:
                 print()
                 print(f"\tShow Chi-square distribution: yes")
+            if self.norm_dist:
+                print()
+                print(f"\tShow normal distribution: yes")
         else:
             print(f"\tX-variable:   {self.xvar}")
             print(f"\tY-variable:   {self.yvar}")
