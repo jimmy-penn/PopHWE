@@ -7,9 +7,9 @@ class HweResultFile:
 
     Input file format is like the following, with a header line and tab-delimited columns. 
  
-    VariantID       Naa     Nab     Nbb     Saa     Sab     Sbb     HetExc   Chi2    EChi2   PChi2
-    rs0             1       53      1949    1.21    52.58   1949.21 1        1.0549  1.8864  3.97e-02
-    rs1             306     738     959     333.29  683.41  986.29  0        61.673  111.99  7.3512
+    VariantID       Naa     Nab     Nbb     Saa     Sab     Sbb     HetExc  Chi2    EChi2   PChi2   z-value DChi2
+    rs001           393     952     1159    422.95  892.11  1188.95 False   64.99  114.55   6.8959  -2.6260 49.5586
+    rs002          2336     145       16   2331.28  154.44  11.28   False   56.70   22.72   2.5624  -1.6008 33.9798
     ...
     """
 
@@ -23,13 +23,14 @@ class HweResultFile:
         self.echi2_column = "EChi2"
         self.pchi2_column = "PChi2"
         self.zval_column = "z-value"
+        self.dchi2_column = "DChi2"
         self.het_column = "HetExc"
 
         self.is_valid = True
         self.err_msg = ""
         self.CheckFileFormat()
 
-        self.chi_columns = [self.chi2_column, self.echi2_column, self.pchi2_column, self.zval_column]
+        self.chi_columns = [self.chi2_column, self.echi2_column, self.pchi2_column, self.zval_column, self.dchi2_column]
 
     def CheckFileFormat(self):
         """
@@ -46,13 +47,14 @@ class HweResultFile:
         vars = header.split(self.delimiter)
         num_vars = len(vars)
 
-        exp_col_num = 12
+        exp_col_num = 13        
         if num_vars != exp_col_num \
             or vars[0].strip().upper() != self.id_column.upper() \
-            or vars[-4].strip().upper() != self.chi2_column.upper() \
-            or vars[-3].strip().upper() != self.echi2_column.upper() \
-            or vars[-2].strip().upper() != self.pchi2_column.upper() \
-            or vars[-1].strip().upper() != self.zval_column.upper() :
+            or vars[-5].strip().upper() != self.chi2_column.upper() \
+            or vars[-4].strip().upper() != self.echi2_column.upper() \
+            or vars[-3].strip().upper() != self.pchi2_column.upper() \
+            or vars[-2].strip().upper() != self.zval_column.upper() \
+            or vars[-1].strip().upper() != self.dchi2_column.upper():
 
             self.is_valid = False
             self.err_msg += f"Error in #columns or 1st or last 3 column headers\n"
@@ -72,15 +74,17 @@ class HweResultFile:
                 f'  {self.echi2_column}\n' + \
                 f'  {self.pchi2_column}\n' + \
                 f'  {self.zval_column}\n' + \
+                f'  {self.dchi2_column}\n' + \
                 f'\nError message: {self.err_msg}\n'
 
             print(err_msg)
             exit()
 
         self.id_column    = vars[0].strip()
-        self.chi2_column  = vars[-4].strip()
-        self.echi2_column = vars[-3].strip()
-        self.pchi2_column = vars[-2].strip()
-        self.zval_column  = vars[-1].strip()
+        self.chi2_column  = vars[-5].strip()
+        self.echi2_column = vars[-4].strip()
+        self.pchi2_column = vars[-3].strip()
+        self.zval_column  = vars[-2].strip()
+        self.dchi2_column = vars[-1].strip()
 
         file.close()

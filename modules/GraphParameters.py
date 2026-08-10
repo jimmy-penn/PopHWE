@@ -72,7 +72,7 @@ class GraphParameters:
                 default_min = default_zval_min
                 default_max = default_zval_max
                 default_bin_size = default_zval_bin 
-            elif self.xvar == hwe_file.pchi2_column:
+            elif self.xvar in [hwe_file.pchi2_column, hwe_file.dchi2_column]:
                 default_min = default_pchi2_min
                 default_max = default_pchi2_max
             
@@ -117,7 +117,7 @@ class GraphParameters:
         self.line_width = 0.8
         self.tick_lbl_size = 12
 
-        if self.xvar in (hwe_file.chi2_column, hwe_file.echi2_column, hwe_file.pchi2_column):
+        if self.xvar in (hwe_file.chi2_column, hwe_file.echi2_column, hwe_file.pchi2_column, hwe_file.dchi2_column):
             self.norm_dist = False
 
         if self.xvar in (hwe_file.zval_column):
@@ -134,6 +134,8 @@ class GraphParameters:
             disp_var = '$\\chi^2$'
         elif var == hwe_file.pchi2_column:
             disp_var = 'p$\\chi^2$'
+        elif var == hwe_file.dchi2_column:
+            disp_var = 'd$\\chi^2$'
         elif var == hwe_file.echi2_column:
             disp_var = 'Expected $\\chi^2$'
 

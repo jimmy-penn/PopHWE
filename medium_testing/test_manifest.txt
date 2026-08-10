@@ -17,23 +17,23 @@
 
 
 ### Test GetGenoCntsFromVcf.py
-Calc pop geno cnts check ancs |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | | TgpAncSnps1kCnts.txt | N | Total 9 ancestry groups
-Calc pop geno cnts sub anc |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --use_sub_anc | TgpAncSnps1kCnts.txt | N | Total 25 ancestry groups
-Calc pop geno cnts split mix 5 |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 | TgpAncSnps1kCnts.txt | N | Total 16 ancestry groups
-Calc pop geno cnts mix 5 wrong merge |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 --merge_list input/MergeList02.txt | TgpAncSnps1kCnts.txt | N | ERROR: Ancestry group
-Calc pop geno cnts mix 5 merge |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 --merge_list input/MergeList01.txt | TgpAncSnps1kCnts.txt | N | Total 10 ancestry groups
-Calc pop geno cnts mix 5 merge use |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 --merge_list input/MergeList01.txt --use_groups | TgpAncSnps1kMrg10Cnts.txt | Y | Saved total
-Calc pop geno cnts sup anc |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --use_groups | TgpAncSnps1kCnts.txt | Y | Saved total
-Calc chr22 pop geno cnts check ancs |  GetGenoCntsFromVcf.py | TgpChr22Snps5k.vcf.gz | Tgp282k_pops.txt | --use_groups | TgpChr22Snps5kCnts.txt | N | Total 9 ancestry groups
+Calc pop geno cnts check ancs | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | | TgpAncSnps1kCnts.txt | N | Total 9 ancestry groups
+Calc pop geno cnts sub anc | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --use_sub_anc | TgpAncSnps1kCnts.txt | N | Total 25 ancestry groups
+Calc pop geno cnts split mix 5 | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 | TgpAncSnps1kCnts.txt | N | Total 16 ancestry groups
+Calc pop geno cnts mix 5 wrong merge | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 --merge_list input/MergeList02.txt | TgpAncSnps1kCnts.txt | N | ERROR: Ancestry group
+Calc pop geno cnts mix 5 merge | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 --merge_list input/MergeList01.txt | TgpAncSnps1kCnts.txt | N | Total 10 ancestry groups
+Calc pop geno cnts mix 5 merge use | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --num_mix_groups 5 --merge_list input/MergeList01.txt --use_groups | TgpAncSnps1kMrg10Cnts.txt | Y | Saved total
+Calc pop geno cnts sup anc | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --use_groups | TgpAncSnps1kCnts.txt | Y | Saved total
+Calc chr22 pop geno cnts check ancs | GetGenoCntsFromVcf.py | TgpChr22Snps5k.vcf.gz | Tgp282k_pops.txt | --use_groups | TgpChr22Snps5kCnts.txt | N | Total 9 ancestry groups
 
 # With pre-assigned populations
-Calc pop geno cnts check ancs smp pops |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | | TgpAncSnps1kCntsSp.txt | N | Total 29 ancestry groups
-Calc pop geno cnts check ancs smp pops mrg |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList03.txt | TgpAncSnps1kCntsSp.txt | N | Total 22 ancestry groups
-Calc pop geno cnts check ancs smp pops use mrg |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList03.txt --use_groups | TgpAncSnps1kCntsSp.txt | Y | Total 22 ancestry groups
+Calc pop geno cnts check ancs smp pops | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | | TgpAncSnps1kCntsSp.txt | N | Total 29 ancestry groups
+Calc pop geno cnts check ancs smp pops mrg | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList03.txt | TgpAncSnps1kCntsSp.txt | N | Total 22 ancestry groups
+Calc pop geno cnts check ancs smp pops use mrg | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList03.txt --use_groups | TgpAncSnps1kCntsSp.txt | Y | Total 22 ancestry groups
 
 # Excluding ancestry groups in the merge list
-Calc pop geno cnts check ancs smp rm pops |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList04.txt | TgpAncSnps1kCntsSpRm.txt | N | Total 12 ancestry groups
-Calc pop geno cnts check ancs smp rm pops |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList04.txt --use_groups | TgpAncSnps1kCntsSpRm.txt | Y | Total 12 ancestry groups
+Calc pop geno cnts check ancs smp rm pops | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList04.txt | TgpAncSnps1kCntsSpRm.txt | N | Total 12 ancestry groups
+Calc pop geno cnts check ancs smp rm pops | GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | TgpSmpPops.txt | --merge_list input/MergeList04.txt --use_groups | TgpAncSnps1kCntsSpRm.txt | Y | Total 12 ancestry groups
 Calc pop geno cnts sup anc rm pops |  GetGenoCntsFromVcf.py | TgpAncSnps1k.vcf.gz | Tgp282k_pops.txt | --merge_list input/MergeList05.txt --use_groups | TgpAncSnps1kCntsRm.txt | Y | Total 5 ancestry groups
 
 ### Test ComputePopHWE.py
@@ -45,15 +45,16 @@ Calc HWE geno cnts check ancs smp pops | ComputePopHWE.py | output/TgpAncSnps1kC
 
 
 ### Test PlotPopHwe.py
-Plot Anc 1k mrg 10 PChi histo |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | | TgpAncSnps1kMrg10Pchi.png | Y | Saved results
-Plot Anc 1k mrg 10 Chi EChi |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar EChi2 --xmin -10 --xmax 500 --title "TGP anc Chi2-EChi2" | TgpAncSnps1kMrg10ChiEchi.png | Y | Saved results
-Plot Anc 1k mrg 10 Chi PChi |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchi.png | Y | Saved results
-Plot Anc 1k mrg 10 Chi PChi het colors |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetdef_color blue --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchiHetC.png | Y | Saved results
-Plot Anc 1k mrg 10 Chi PChi hetexc only |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetexc_only --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchiHetExc.png | Y | Saved results
-Plot Anc 1k mrg 10 Chi PChi hetdef only |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetdef_color purple --hetdef_only --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchiHetDef.png | Y | Saved results
-Plot chr22 5k PChi histo |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf01.txt | | --ymax 200 | TgpChr22Snps5kMaf01Pchi.png | Y | Saved results
-Plot chr22 5k Maf 05 PChi histo |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf05.txt | | --ymax 200 | TgpChr22Snps5kMaf05Pchi.png | Y | Saved results
-Plot chr22 5k PChi histo hetexc |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf05.txt | | --hetexc_only --ymax 200 | TgpChr22Snps5kMaf01PchiHE.png | Y | Saved results
-Plot chr22 5k PChi histo hetdef |  PlotPopHwe.py |  output/TgpChr22Snps5kMaf05.txt | | --hetdef_only --ymax 200 | TgpChr22Snps5kMaf01PchiHD.png | Y | Saved results
-Plot geno cnts check ancs smp pops PChi histo |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | | TgpAncSnps1kSpPChi.png | Y | Saved results
-Plot geno cnts check ancs smp pops Zval histo |  PlotPopHwe.py |  output/TgpAncSnps1kMrg10Hwe.txt | | --xvar z-value --xmin -5 --xmax 5 --ymax 100 --bin_size 0.1 --gw 16 --gh 8 --title "TGP chr22 distribution of z-values" --title_size 24 --axis_lbl_size 18 --norm_dist | TgpAncSnps1kSpZval.png | Y | Saved results
+Plot Anc 1k mrg 10 PChi histo | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | | TgpAncSnps1kMrg10Pchi.png | Y | Saved results
+Plot Anc 1k mrg 10 Chi EChi | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar EChi2 --xmin -10 --xmax 500 --title "TGP anc Chi2-EChi2" | TgpAncSnps1kMrg10ChiEchi.png | Y | Saved results
+Plot Anc 1k mrg 10 Chi PChi | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchi.png | Y | Saved results
+Plot Anc 1k mrg 10 Chi PChi het colors | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetdef_color blue --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchiHetC.png | Y | Saved results
+Plot Anc 1k mrg 10 Chi PChi hetexc only | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetexc_only --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchiHetExc.png | Y | Saved results
+Plot Anc 1k mrg 10 Chi PChi hetdef only | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetdef_color purple --hetdef_only --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchiHetDef.png | Y | Saved results
+Plot Anc 1k mrg 10 Chi DChi hetdef only | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar DChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetdef_color purple --hetdef_only --title "TGP anc Chi2-DChi2" | TgpAncSnps1kMrg10ChiDchiHetDef.png | Y | Saved results
+Plot chr22 5k PChi histo | PlotPopHwe.py | output/TgpChr22Snps5kMaf01.txt | | --ymax 200 | TgpChr22Snps5kMaf01Pchi.png | Y | Saved results
+Plot chr22 5k Maf 05 PChi histo | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --ymax 200 | TgpChr22Snps5kMaf05Pchi.png | Y | Saved results
+Plot chr22 5k PChi histo hetexc | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --hetexc_only --ymax 200 | TgpChr22Snps5kMaf01PchiHE.png | Y | Saved results
+Plot chr22 5k PChi histo hetdef | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --hetdef_only --ymax 200 | TgpChr22Snps5kMaf01PchiHD.png | Y | Saved results
+Plot geno cnts check ancs smp pops PChi histo | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | | TgpAncSnps1kSpPChi.png | Y | Saved results
+Plot geno cnts check ancs smp pops Zval histo | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --xvar z-value --xmin -5 --xmax 5 --ymax 100 --bin_size 0.1 --gw 16 --gh 8 --title "TGP chr22 distribution of z-values" --title_size 24 --axis_lbl_size 18 --norm_dist | TgpAncSnps1kSpZval.png | Y | Saved results

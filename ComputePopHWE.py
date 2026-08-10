@@ -54,7 +54,7 @@ def main():
         print(f"ERROR: cannot create output file {output_file} for writing!")
         exit()  
 
-    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tHetExc\tChi2\tEChi2\tPChi2\tz-value"
+    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tHetExc\tChi2\tEChi2\tPChi2\tz-value\tDChi2"
     out_file.write(out_header + "\n")
 
     # Input file might be very large. HWE results are calculated line by line and saved to output file 
@@ -127,20 +127,21 @@ def main():
 
             if num_tot_smps >= min_pop_size and maf > min_maf:
                 chi2, Enaa, Enab, Enbb = CalcHwe(Naa, Nab, Nbb)
-                eChi, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
-                pChi = 0
-                zVal = 0
+                echi2, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
+                pchi2 = 0
+                z_val = 0
                 if Saa * Sab * Sbb > 0:
-                    pChi = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
-                    zVal = math.sqrt(pChi)
-
+                    pchi2 = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
+                    zval = math.sqrt(pchi2)
 
                 is_het_exc = True 
                 if Nab < Enab:
                     is_het_exc = False
-                    zVal *= -1
+                    zval *= -1
 
-                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{eChi:.4f}\t{pChi:.4f}\t{zVal:.4f}"
+                dchi2 = abs(chi2 - echi2)
+
+                save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{echi2:.4f}\t{pchi2:.4f}\t{zval:.4f}\t{dchi2:.4f}"
                 save_lines.append(save_line)
                 num_lines_in_block += 1
 
