@@ -108,8 +108,18 @@ class GraphParameters:
         self.title = args.title
         self.tight_plot = args.tight_plot
         self.nolimits = args.nolimits
-        self.title_size = args.title_size
-        self.axis_lbl_size = args.axis_lbl_size
+        self.title_size = float(args.title_size)
+        self.axis_lbl_size = float(args.axis_lbl_size)
+
+        self.chi_adj = 0
+        if args.chi_adj:
+            try:
+                self.chi_adj = float(args.chi_adj)
+            except Exception as error:
+                self.chi_adj = 0
+
+        if (self.chi_adj < 0):
+            self.chi_adj = 0
 
         # Currently not user-speficied
         self.dot_color = 'black'

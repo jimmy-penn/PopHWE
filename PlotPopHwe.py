@@ -106,6 +106,9 @@ def PlotHistogram(params, in_file, out_file):
 
     for i in range(num_snps):
         x = xvals[i]
+        if params.chi_adj and params.xvar in ("Chi2", "EChi2", "PChi2", "MChi2", "DChi2"):
+            x *= params.chi_adj
+
         bin_id = 0
             
         if x > min_chi and x < max_chi:
@@ -165,7 +168,7 @@ def PlotHistogram(params, in_file, out_file):
                 else:
                     y = StandardNormalPdf(x) * num_snps * params.bin_size
 
-                x_pdf.append(x-params.bin_size*0) # Why shifting to right by two bins
+                x_pdf.append(x)
                 y_pdf.append(y)
 
         print(f'Total {tot_cnts} SNPs in {num_bins} bins')
@@ -226,6 +229,10 @@ def PlotScatterplot(params, in_file, out_file):
 
         x = pf[params.xvar][i+1]
         y = pf[params.yvar][i+1]
+
+        # Only adjust the chi2 value on y-axis
+        if params.chi_adj and params.yvar in ("Chi2", "EChi2", "PChi2", "MChi2", "DChi2"):
+            y *= params.chi_adj
 
         if x > max_xval:
             max_xval = x
@@ -313,6 +320,7 @@ def main():
     parser.add_argument("--yvar", help="Variable to be plotted on y-axis", metavar="", default="EChi2")
     parser.add_argument("--bin_size", help="Bin size for chi square values", metavar="")
     parser.add_argument("--chi_dist", help="Show expected chi2 distribution with df=1", action="store_true")
+    parser.add_argument("--chi_adj", help="Adjust chi2 value with a coefficient",  metavar="")
     parser.add_argument("--norm_dist", help="Show expected normal distribution for z-values", action="store_true")
     parser.add_argument("--dot_size", help="Dot size (0.5, 1, 3, etc) of the scatter plot", metavar="", default=1)
     parser.add_argument("--title", help="The title of the plot", metavar="", default="")

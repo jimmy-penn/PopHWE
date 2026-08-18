@@ -53,8 +53,10 @@ Plot Anc 1k mrg 10 Chi PChi hetexc only | PlotPopHwe.py | output/TgpAncSnps1kMrg
 Plot Anc 1k mrg 10 Chi PChi hetdef only | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar PChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetdef_color purple --hetdef_only --title "TGP anc Chi2-PChi2" | TgpAncSnps1kMrg10ChiPchiHetDef.png | Y | Saved results
 Plot Anc 1k mrg 10 Chi DChi hetdef only | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --scatter --xvar Chi2 --yvar DChi2 --xmin -10 --xmax 500 --dot_size 5 --hetexc_color red --hetdef_color purple --hetdef_only --title "TGP anc Chi2-DChi2" | TgpAncSnps1kMrg10ChiDchiHetDef.png | Y | Saved results
 Plot chr22 5k PChi histo | PlotPopHwe.py | output/TgpChr22Snps5kMaf01.txt | | --ymax 200 | TgpChr22Snps5kMaf01Pchi.png | Y | Saved results
-Plot chr22 5k Maf 05 PChi histo | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --ymax 200 | TgpChr22Snps5kMaf05Pchi.png | Y | Saved results
+Plot chr22 5k Maf 05 PChi histo | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --ymax 200 --chi_dist | TgpChr22Snps5kMaf05Pchi.png | Y | Saved results
+Plot chr22 5k Maf 05 PChi histo adj | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --ymax 200 --chi_dist --chi_adj 0.5 | TgpChr22Snps5kMaf05PchiAdj.png | Y | Saved results
 Plot chr22 5k PChi histo hetexc | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --hetexc_only --ymax 200 | TgpChr22Snps5kMaf01PchiHE.png | Y | Saved results
 Plot chr22 5k PChi histo hetdef | PlotPopHwe.py | output/TgpChr22Snps5kMaf05.txt | | --hetdef_only --ymax 200 | TgpChr22Snps5kMaf01PchiHD.png | Y | Saved results
 Plot geno cnts check ancs smp pops PChi histo | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | | TgpAncSnps1kSpPChi.png | Y | Saved results
 Plot geno cnts check ancs smp pops Zval histo | PlotPopHwe.py | output/TgpAncSnps1kMrg10Hwe.txt | | --xvar z-value --xmin -5 --xmax 5 --ymax 100 --bin_size 0.1 --gw 16 --gh 8 --title "TGP chr22 distribution of z-values" --title_size 24 --axis_lbl_size 18 --norm_dist | TgpAncSnps1kSpZval.png | Y | Saved results
+
