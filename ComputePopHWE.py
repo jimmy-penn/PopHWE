@@ -30,7 +30,7 @@ def CalcHwe(aa, ab, bb):
 
 def main():
     parser = argparse.ArgumentParser(description="This script computes HWE-test results from genotype counts.")
-    parser.add_argument("geno_cnt_file", help="Name (with full path) of the genotype count file")
+    parser.add_argument("geno_cnt_file", help="Name of the genotype count file")
     parser.add_argument("output_file", help="Name of the output file")
     parser.add_argument("--min_pop_size", help="Minimum population size for chi-square test", metavar="", type=int, default=10)
     parser.add_argument("--min_MAF", help="Minimum minor allele frequency", metavar="", type=float, default=0.01)

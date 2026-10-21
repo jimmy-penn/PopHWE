@@ -14,6 +14,7 @@ use Carp;
 use Cwd 'abs_path';
 use File::Path qw(make_path remove_tree);
 use Time::HiRes qw(gettimeofday);
+use Getopt::Long;
 
 my $script = $0;
 my $pathToScript = abs_path($script);
@@ -22,15 +23,25 @@ if ($pathToScript =~ /(.+)\/(.+)/) {
     $script = $2;
 }
 
-if (@ARGV < 1) {
-    print "Usage $script <manifest> [is_update_baseline] [is_debug]\n\n";
-    exit;
-}
+my $manifest = shift @ARGV;
 my $python = "/c/Users/yumij/AppData/Local/Python/bin/python";
 
-my $manifest = $ARGV[0];
-my $updateBaseline = @ARGV > 1 ? $ARGV[1] : 0;
-my $DEBUG = @ARGV > 2 ? $ARGV[2] : 0;
+my ($updateBaseline, $DEBUG, $help) = (0, 0, 0, "");
+
+GetOptions(
+    'manifest=s' => \$manifest,
+    'python=s' => \$python,
+    'ub' => \$updateBaseline,
+    'debug' => \$DEBUG,
+) or die "Error in command line arguments\n";
+
+if (!$manifest || $manifest !~ /^\w+/) {
+    print "\nERROR: Manifest file is required\n";
+    print "Usage: test_pophwe.pl <manifest_file> [--python <python_path>] [--ub] [--debug] [--help]\n";
+    print "  --python: location of python interpreter\n";
+    print "  --ub:     update baseline files\n";
+    exit 1;
+}
 
 my $inputDir  = "$pathToScript/input";
 my $outputDir  = "$pathToScript/output";
