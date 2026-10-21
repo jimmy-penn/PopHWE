@@ -1,6 +1,6 @@
 # PopHWE Software Documentation
 
-PopHWE performs HWE-test for genotype datasets in the presense of population structure. Currently it is implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method decribed in Jin and Bao (2026) to calculate a chi-square value $\\chi^{2}_{p}$, which can be used to calculate the p-value under the null hypothesis that all the ancestry groups are in HWE. It also calculates other chi-square values including $\\chi^{2}_{c}$, $\\chi^{2}_{e}$, and $\\chi^{2}_{d}$, as described in the manuscript.
+PopHWE performs HWE-test for genotype datasets in the presense of population structure. Currently it is implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method decribed in Jin and Bao (2026) to calculate a chi-square value \$\\chi^{2}_{p}\$, which can be used to calculate the p-value under the null hypothesis that all the ancestry groups are in HWE. It also calculates other chi-square values including \$\\\\chi^{2}_{c}\$, \$\\chi^{2}_{e}\$, and \$\\\\chi^{2}_{d}\$, as described in the manuscript.
 
 
 ### Input files
@@ -78,5 +78,6 @@ The output file generated
 ### Visualization of GrafAnc results
 
 
-### Reference:
+### References:
 Jin, Y., & Bao, Y. (2026). Robust Chi-square Test to Distinguish Population Stratification from Other Reasons of Hardy-Weinberg Disequilibrium. LangTaoSha Preprint Server. https://doi.org/10.65215/LTSpreprints.2026.10.20.000366.
+Jin, Y., Wang, H., Naj, A. C., Wang, L. S., & Lee, W. P. (2026). GrafAnc: Reliable and reproducible inference of continental and regional population structure. HGG Adv, 7(1), 100530. https://doi.org/10.1016/j.xhgg.2025.100530 

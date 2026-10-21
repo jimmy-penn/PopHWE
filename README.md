@@ -1,5 +1,5 @@
 # PopHWE
-PopHWE is a statistical method and software tool to test for Hardy–Weinberg Equilibrium (HWE) in the presence of population stratification. It separates HWE deviations caused by population structure from those caused by other reasons, especially genotype data errors. See [PopHWE documentation](https://github.com/jimmy-penn/pophwe/tree/master/PopHWEDocumentation.md) for software documentation.
+PopHWE is a statistical method and software tool to test for Hardy–Weinberg Equilibrium (HWE) in the presence of population stratification. It separates HWE deviations caused by population structure from those caused by other reasons, especially genotype data errors. See [PopHWE documentation](https://github.com/jimmy-penn/PopHWE/blob/main/PopHweDocumentation.md) for software documentation.
 
 Developer: [Yumi (Jimmy) Jin, PhD](mailto:yumijin@hotmail.com).
 
