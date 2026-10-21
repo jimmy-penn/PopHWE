@@ -1,6 +1,6 @@
 # PopHWE Software Documentation
 
-PopHWE performs HWE-test for genotype datasets in the presense of population structure. Currently it is implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method decribed in Jin and Bao (2026) to calculate a chi-square value \$\\chi^{2}_{p}\$, which can be used to calculate the p-value under the null hypothesis that all the ancestry groups are in HWE. It also calculates other chi-square values including \$\\\\chi^{2}_{c}\$, \$\\chi^{2}_{e}\$, and \$\\\\chi^{2}_{d}\$, as described in the manuscript.
+PopHWE performs HWE-test for genotype datasets in the presense of population structure. Currently it is implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method decribed in Jin and Bao (2026) to calculate a chi-square value χ_p^2, which can be used to calculate the p-value under the null hypothesis that all the ancestry groups are in HWE. It also calculates other chi-square values including χ_c^2, χ_e^2, and χ_d^2, as described in the manuscript.
 
 
 ### Input files
