@@ -62,12 +62,24 @@ $ python GetGenoCntsFromVcf.py medium_testing/input/TgpAncSnps1k.vcf.gz medium_t
 If the grouping looks good, the user can use `--use_groups` to accept it:
 
 ``` sh
-$ Python/bin/python GetGenoCntsFromVcf.py medium_testing/input/TgpAncSnps1k.vcf.gz medium_testing/input/Tgp282k_pops.txt results/TgpAncSnps1kMrg10Cnts.txt --num_mix_groups 5 --merge_list medium_testing//input/MergeList01.txt --use_groups
+$ python GetGenoCntsFromVcf.py medium_testing/input/TgpAncSnps1k.vcf.gz medium_testing/input/Tgp282k_pops.txt results/TgpAncSnps1kMrg10Cnts.txt --num_mix_groups 5 --merge_list medium_testing/input/MergeList01.txt --use_groups
 ```
 
-The input dataset can also be a VCF file (zipped or not), e.g.,
+PopHWE calculates genotype counts for each variant and ancestry group, and saves the results to the output file, like:
+
+| VariantID       |  AncID_1000  |  AncID_10705  |  AncID_30000  |  AncID_40000  |  AncID_50000  |
+|-----------------|--------------|---------------|---------------|---------------|---------------|
+| chr1_817341_A_G |  264/204/34  |  67/68/17     |  7/151/350    |  21/175/293   |  14/210/280   |
+| chr1_831716_A_G |  376/112/13  |  123/26/3     |  507/1/0      |  489/0/0      |  500/0/0      |
+| chr1_833068_G_A |  421/74/6    |  126/25/1     |  418/86/4     |  243/198/48   |  196/210/94   |
+
+The first column includes variant IDs and the other columns have counts of the three genotypes (aa, ab, bb) delimited by `/`.
+
+If the genotype counts were already been calculated by using other tools, `GetGenoCntsFromVcf.py` does not need to be run. The counts can be saved to a file with the same format (the first column header should be `VariantID`, but other column headers can be any strings for ancestry group names) and passed to `ComputePopHWE.py`, as described below.
+
 
 ``` sh
+$ python ComputePopHWE.py results/TgpAncSnps1kMrg10Cnts.txt results/TgpAncSnps1kMrg10Pchi.txt
 ```
 
 
@@ -75,9 +87,10 @@ The input dataset can also be a VCF file (zipped or not), e.g.,
 
 The output file generated 
 
-### Visualization of GrafAnc results
+### Visualization of PopHWE results
 
 
 ### References:
 Jin, Y., & Bao, Y. (2026). Robust Chi-square Test to Distinguish Population Stratification from Other Reasons of Hardy-Weinberg Disequilibrium. LangTaoSha Preprint Server. https://doi.org/10.65215/LTSpreprints.2026.10.20.000366.
+
 Jin, Y., Wang, H., Naj, A. C., Wang, L. S., & Lee, W. P. (2026). GrafAnc: Reliable and reproducible inference of continental and regional population structure. HGG Adv, 7(1), 100530. https://doi.org/10.1016/j.xhgg.2025.100530 
