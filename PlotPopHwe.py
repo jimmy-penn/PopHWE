@@ -49,9 +49,9 @@ def StandardNormalPdf(x):
 def ChiPdf(x):
     y = 0
 
-    if x < 100:
+    if x > 0 and x < 100:
         denom = (2*math.pi*x)**0.5 * math.exp(x/2)
-    
+
         if (denom > 0):
             y = 1 / denom
         
@@ -83,7 +83,7 @@ def PlotHistogram(params, in_file, out_file):
 
     xvals = []
     for i in range(num_snps):
-        x = pf[params.xvar][i+1]
+        x = pf[params.xvar][i]
         xvals.append(x)
 
     print(f'Total {num_snps} SNPs for plotting.\n')
@@ -93,7 +93,7 @@ def PlotHistogram(params, in_file, out_file):
 
     histo_vals = []        
     num_bins = round((max_chi - min_chi) / params.bin_size) + 1
-    
+
     bin_starts = []
     bin_cnts = []
 
@@ -106,15 +106,15 @@ def PlotHistogram(params, in_file, out_file):
 
     for i in range(num_snps):
         x = xvals[i]
-        if params.chi_adj and params.xvar in ("Chi2", "EChi2", "PChi2", "MChi2", "DChi2"):
+        if params.chi_adj and params.xvar in ("CChi2", "EChi2", "PChi2", "MChi2", "DChi2"):
             x *= params.chi_adj
 
         bin_id = 0
             
         if x > min_chi and x < max_chi:
             bin_id = int((x * 1.0 - min_chi) / params.bin_size)
+
             if bin_id < num_bins:
-#                bin_cnts[bin_id] += 1
                 is_het_exc = pf[params.het_column][i+1]
 
                 if params.hetdef_only:
@@ -135,7 +135,6 @@ def PlotHistogram(params, in_file, out_file):
         if cnt > max_bin_cnt:
             max_bin_id = bin_no
             max_bin_cnt = cnt
-#        print(f'BinNo. {bin_no} cnt {cnt}')
 
     if params.show_bin_cnts:            
         print(f'No. {max_bin_id} cnt {max_bin_cnt}')
@@ -267,7 +266,7 @@ def PlotScatterplot(params, in_file, out_file):
 
     print(f'Total {num_snps} SNPs for plotting.')        
     print(f'x: 0 - {max_xval} y: 0 - {max_yval}')        
-        
+
     ax.scatter(xvals, yvals, s=params.dot_size, c=colors, data=pf)
     ax.scatter(xevals, yevals, s=params.dot_size, c=ecolors, data=pf)
     ax.scatter(xdvals, ydvals, s=params.dot_size, c=dcolors, data=pf)

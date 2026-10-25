@@ -64,7 +64,7 @@ class GraphParameters:
             default_bin_size = default_chi2_bin_size 
             default_min, default_max = default_chi2_min, default_chi2_max
 
-            self.xmin, self.ymin = 0, 0     # Chi2 values and counts are all positive 
+            self.ymin = 0     # Counts are all positive 
 
             if self.xvar == hwe_file.zval_column:
                 # z-values can be negative
@@ -83,7 +83,7 @@ class GraphParameters:
 #            print(f"bin {self.bin_size}")
 #            exit()
         else:
-            self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 5)
+            self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 10)
 
         if self.xmin >= self.xmax:
             print(f"\nERROR: wrong x-value range: {self.xmin} - {self.xmax}")
@@ -141,13 +141,13 @@ class GraphParameters:
         disp_var = var
 
         if var == hwe_file.chi2_column:
-            disp_var = '$\\chi^2$'
+            disp_var = '$\\chi^{2}_{c}$'
         elif var == hwe_file.pchi2_column:
-            disp_var = 'p$\\chi^2$'
+            disp_var = '$\\chi^{2}_{p}$'
         elif var == hwe_file.dchi2_column:
-            disp_var = 'd$\\chi^2$'
+            disp_var = '$\\chi^{2}_{d}$'
         elif var == hwe_file.echi2_column:
-            disp_var = 'Expected $\\chi^2$'
+            disp_var = '$\\chi^{2}_{e}$'
 
         return disp_var
 

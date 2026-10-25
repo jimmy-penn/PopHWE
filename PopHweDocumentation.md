@@ -1,6 +1,6 @@
 # PopHWE Software Documentation
 
-PopHWE performs HWE-test for genotype datasets in the presense of population structure. Currently it is implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method decribed in Jin and Bao (2026) to calculate a chi-square value χ_p^2, which can be used to calculate the p-value under the null hypothesis that all the ancestry groups are in HWE. It also calculates other chi-square values including χ_c^2, χ_e^2, and χ_d^2, as described in the manuscript.
+PopHWE performs HWE-test for genotype datasets in the presense of population structure. Currently it is implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method decribed in Jin and Bao (2026) to calculate a chi-square value χ<sub>p</sub><sup>2</sup>, which can be used to calculate the p-value under the null hypothesis that all the ancestry groups are in HWE. It also calculates other chi-square values including χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>, and χ<sub>d</sub><sup>2</sup>, as described in the manuscript.
 
 
 ### Input files
@@ -10,7 +10,7 @@ PopHWE takes a text file with genotype counts for all variants and all ancestry 
 
 ### Running `GetGenoCntsFromVcf.py` to calculate genotype counts by ancetry groups from a VCF file
 
-Example (current directory is the `PopHWE`):
+Example (current directory is `PopHWE`):
 
 Instructions can be obtained by using `--help` option, e.g.,
 
@@ -34,7 +34,7 @@ options:
 ```
 
 
-The following command summarizes the ancestry groups made by GrafAnc and shows the results on screen, letting the user to each merge the groups or take the ancestry grouping:
+The following command summarizes the ancestry groups made by GrafAnc and shows the results on screen, letting the user eather merge the groups or take the ancestry grouping:
 
 ``` sh
 $ mkdir results
@@ -75,12 +75,39 @@ PopHWE calculates genotype counts for each variant and ancestry group, and saves
 
 The first column includes variant IDs and the other columns have counts of the three genotypes (aa, ab, bb) delimited by `/`.
 
-If the genotype counts were already been calculated by using other tools, `GetGenoCntsFromVcf.py` does not need to be run. The counts can be saved to a file with the same format (the first column header should be `VariantID`, but other column headers can be any strings for ancestry group names) and passed to `ComputePopHWE.py`, as described below.
-
+If the genotype counts were already calculated by using other tools, `GetGenoCntsFromVcf.py` does not need to be run. The counts can be saved to a file with the same format (the first column header should be `VariantID`, but other column headers can be any strings for ancestry group names) and passed to `ComputePopHWE.py`, which calculates χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>, and Z<sub>p</sub> values (shown as Chi2, EChi2, PChi2, DChi2, and zp-value in the output file, respectively) from the genotype counts. The script also outputs genotype counts and sums of expected genotype counts (Seaa, Seab, Sebb) to the output file.  
 
 ``` sh
-$ python ComputePopHWE.py results/TgpAncSnps1kMrg10Cnts.txt results/TgpAncSnps1kMrg10Pchi.txt
+$ python ComputePopHWE.py results/TgpAncSnps1kMrg10Cnts.txt results/TgpAncSnps1kMrg10.txt
 ```
+
+Users can use option `--min_pop_size` to set minimum population size and `--min_MAF` to set minimum minor allele frequency for chi-square test.
+
+HWE test results can be plotted using `PlotPopHwe.py`:
+``` sh
+$ python PlotPopHwe.py results/TgpAncSnps1kMrg10.txt results/TgpAncSnps1kMrg10Pchi.png
+```
+By default, `PlotPopHwe.py` plots a histogram of χ<sub>p</sub><sup>2</sup> with default settings. For other usages, users can run the script with `--help` option to see the instruction. Below are some examples.
+
+Set axis limits, bin size and display χ<sub>(1)</sub><sup>2</sup> distribution curve:
+``` sh
+$ python PlotPopHwe.py results/TgpAncSnps1kMrg10.txt results/TgpAncSnps1kMrg10PchiBin05.png --xmax 5 --ymax 200 --bin_size 0.05 --chi_dist 
+```
+
+Plot histogram of Z<sub>p</sub> value, set some parameters and plot N(0,1) distribution curve
+``` sh
+$ python PlotPopHwe.py results/TgpAncSnps1kMrg10.txt results/TgpAncSnps1kMrg10Zp.png --xvar Zp-value --xmin -5 --xmax 5 --ymax 100 --bin_size 0.05 --gw 16 --gh 8 --title "TGP Ancestry SNPs distribution of Zp-values" --title_size 24 --axis_lbl_size 18 --norm_dist
+```
+
+Plot Scatterplot of χ<sub>c</sub><sup>2</sup> vs. χ<sub>e</sub><sup>2</sup>:
+``` sh
+$ python PlotPopHwe.py results/TgpAncSnps1kMrg10.txt results/TgpAncSnps1kMrg10CEChi.png --xvar CChi2 --yvar EChi2 --scatter --xmin 0 --xmax 600 --dot_size 5 --gw 12 --gh 12 --title "TGP Ancestry SNPs scatterplot of CChi2 and EChi2"
+```
+
+/c/Users/yumij/AppData/Local/Python/bin/python ComputePopHWE.py results/TgpAncSnps1kMrg10Cnts.txt results/TgpAncSnps1kMrg10Pchi.txt
+/c/Users/yumij/AppData/Local/Python/bin/python PlotPopHwe.py medium_testing/output/TgpAncSnps1kMrg10Hwe.txt results/TgpAncSnps1kMrg10Pchi.png
+ /c/Users/yumij/AppData/Local/Python/bin/python PlotPopHwe.py results/TgpChr22Snps5kMaf05.txt results/TgpChr22Snps5kMaf05PchiAdj.png --ymax 200 --chi_dist --chi_adj 0.5
+
 
 
 ### Output files

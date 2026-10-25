@@ -54,7 +54,7 @@ def main():
         print(f"ERROR: cannot create output file {output_file} for writing!")
         exit()  
 
-    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tHetExc\tChi2\tEChi2\tPChi2\tz-value\tDChi2"
+    out_header = "VariantID\tNaa\tNab\tNbb\tSaa\tSab\tSbb\tHetExc\tCChi2\tEChi2\tPChi2\tZp-value\tDChi2"
     out_file.write(out_header + "\n")
 
     # Input file might be very large. HWE results are calculated line by line and saved to output file 
@@ -90,6 +90,7 @@ def main():
 
             Naa, Nab, Nbb = 0, 0, 0  # genotype counts of all populations for aa, ab, bb respectively
             Saa, Sab, Sbb = 0, 0, 0  # sum of expected genotype counts for aa, ab, bb respectively
+            var_sum = 0              # sum of npq
             for col in range(num_pops):
                 val = vals[col+1].strip()
                 cnt_str = str(val)
@@ -121,6 +122,8 @@ def main():
                         Sab += Eiab
                         Sbb += Eibb       
 
+                        var_sum += Ni * p**2 * q**2
+
             num_tot_smps = Naa + Nab + Nbb
             tot_p = (2.0 * Naa + Nab) / (2 * num_tot_smps) if num_tot_smps > 0 else 1
             maf = min(tot_p, 1 - tot_p)
@@ -129,17 +132,16 @@ def main():
                 chi2, Enaa, Enab, Enbb = CalcHwe(Naa, Nab, Nbb)
                 echi2, Esaa, Esab, Esbb = CalcHwe(Saa, Sab, Sbb)
                 pchi2 = 0
-                z_val = 0
+                zval = 0
                 if Saa * Sab * Sbb > 0:
-                    pchi2 = (Naa-Saa)**2/Saa + (Nab-Sab)**2/Sab + (Nbb-Sbb)**2/Sbb
-                    zval = math.sqrt(pchi2)
+                    zval = (Naa-Saa) / math.sqrt(var_sum)
+                    pchi2 = zval**2
 
                 is_het_exc = True 
                 if Nab < Enab:
                     is_het_exc = False
-                    zval *= -1
 
-                dchi2 = abs(chi2 - echi2)
+                dchi2 = chi2 - echi2
 
                 save_line = f"{var_id}\t{Naa}\t{Nab}\t{Nbb}\t{Saa:.2f}\t{Sab:.2f}\t{Sbb:.2f}\t{is_het_exc}\t{chi2:.4f}\t{echi2:.4f}\t{pchi2:.4f}\t{zval:.4f}\t{dchi2:.4f}"
                 save_lines.append(save_line)

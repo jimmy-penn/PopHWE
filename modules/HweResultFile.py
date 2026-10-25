@@ -7,7 +7,7 @@ class HweResultFile:
 
     Input file format is like the following, with a header line and tab-delimited columns. 
  
-    VariantID       Naa     Nab     Nbb     Saa     Sab     Sbb     HetExc  Chi2    EChi2   PChi2   z-value DChi2
+    VariantID       Naa     Nab     Nbb     Saa     Sab     Sbb     HetExc  CChi2   EChi2   PChi2   Zp-value DChi2
     rs001           393     952     1159    422.95  892.11  1188.95 False   64.99  114.55   6.8959  -2.6260 49.5586
     rs002          2336     145       16   2331.28  154.44  11.28   False   56.70   22.72   2.5624  -1.6008 33.9798
     ...
@@ -19,10 +19,10 @@ class HweResultFile:
         self.delimiter = '\t'        # Delimiter of columns, tab or comma
 
         self.id_column = "VariantID"
-        self.chi2_column = "Chi2"
+        self.chi2_column = "CChi2"
         self.echi2_column = "EChi2"
         self.pchi2_column = "PChi2"
-        self.zval_column = "z-value"
+        self.zval_column = "Zp-value"
         self.dchi2_column = "DChi2"
         self.het_column = "HetExc"
 
