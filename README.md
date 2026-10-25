@@ -5,7 +5,7 @@ Developer: [Yumi (Jimmy) Jin, PhD](mailto:yumijin@hotmail.com).
 
 ### Required libraries and files
 
-PopHWE is currently implemented in python. The PopHWE repository can be downloaded using the following command:
+PopHWE is currently implemented in python. The source code and required files can be downloaded using the following command:
 
 ``` sh
 $ git clone https://github.com/jimmy-penn/pophwe.git
