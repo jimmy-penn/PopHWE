@@ -60,6 +60,11 @@ my $numTests = @allTests;
 my $numFailTests = 0;
 
 print "\n";
+unless (-e $outputDir) {
+    print "mkdir $outputDir\n";
+    system("mkdir $outputDir");
+}
+
 if ($updateBaseline) {
     system("rm -rf $baselineDir") if (-e $baselineDir);
     system("mkdir $baselineDir") 
