@@ -76,6 +76,7 @@ If the genotype counts have already been calculated using other tools, `GetGenoC
 
 ### Running `ComputePopHWE.py` to perform PopHWE chi-square test
 
+
 ``` sh
 $ python ComputePopHWE.py results/TgpAncSnps1kMrg10Cnts.txt results/TgpAncSnps1kMrg10.txt
 ```
