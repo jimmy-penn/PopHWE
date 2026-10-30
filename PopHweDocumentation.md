@@ -1,6 +1,6 @@
 # PopHWE Software Documentation
 
-PopHWE performs HWE tests for genotype datasets in the presence of population structure. It is currently implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method described in [Jin and Bao (2026)](https://langtaosha.org.cn/lts/en/preprint/view/366) to calculate a chi-square value χ<sub>p</sub><sup>2</sup>, which can be used to compute the p-value under the null hypothesis that all ancestry groups are in HWE. It also calculates other chi-square values, χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>, and χ<sub>d</sub><sup>2</sup>, as described in the manuscript.
+PopHWE performs HWE tests for genotype datasets in the presence of population structure. It is currently implemented in Python. The test dataset is partitioned into relatively homogeneous ancestry groups. PopHWE uses the method described in [Jin and Bao (2026)](https://langtaosha.org.cn/lts/en/preprint/view/366) to calculate a chi-square value χ<sub>p</sub><sup>2</sup>, which can be used to compute the p-value under the null hypothesis that every ancestry group is in HWE. It also calculates other chi-square values, χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>, and χ<sub>d</sub><sup>2</sup>, as described in the manuscript.
 
 ### Input files
 
@@ -74,7 +74,7 @@ The first column contains variant IDs, and the remaining columns contain counts 
 
 ### Running `ComputePopHWE.py` to perform PopHWE chi-square test
 
-If the genotype counts have already been calculated using other tools, `GetGenoCntsFromVcf.py` does not need to be run. The counts can be saved to a file in the same format (the first column header must be `VariantID`; the other column headers can be any strings naming the ancestry groups) and passed to `ComputePopHWE.py`, which calculates the χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>, and Z<sub>p</sub> values and reports them in the output file as `CChi2`, `EChi2`, `PChi2`, `DChi2`, and `Zp-value`, respectively. The script also writes the genotype counts and the sums of expected genotype counts (`Seaa`, `Seab`, `Sebb`) to the output file.
+If the genotype counts have already been calculated using other tools, `GetGenoCntsFromVcf.py` does not need to be run. The counts can be saved to a file in the same format (the first column header must be `VariantID`; the other column headers can be any strings naming the ancestry groups) and passed to `ComputePopHWE.py`, which calculates the χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>, and Z<sub>p</sub> values and reports them in the output file as `CChi2`, `EChi2`, `PChi2`, `DChi2`, `Zp`, and `p-value`, respectively. The script also writes the genotype counts and the sums of expected genotype counts (`Seaa`, `Seab`, `Sebb`) to the output file.
 
 
 ``` sh
@@ -98,7 +98,7 @@ $ python PlotPopHwe.py results/TgpAncSnps1kMrg10.txt results/TgpAncSnps1kMrg10Pc
 
 Plot histogram of Z<sub>p</sub> value, set some parameters and plot N(0,1) distribution curve
 ``` sh
-$ python PlotPopHwe.py results/TgpAncSnps1kMrg10.txt results/TgpAncSnps1kMrg10Zp.png --xvar Zp-value --xmin -5 --xmax 5 --ymax 100 --bin_size 0.05 --gw 16 --gh 8 --title "TGP Ancestry SNPs distribution of Zp-values" --title_size 24 --axis_lbl_size 18 --norm_dist
+$ python PlotPopHwe.py results/TgpAncSnps1kMrg10.txt results/TgpAncSnps1kMrg10Zp.png --xvar Zp --xmin -5 --xmax 5 --ymax 100 --bin_size 0.05 --gw 16 --gh 8 --title "TGP Ancestry SNPs distribution of Zp" --title_size 24 --axis_lbl_size 18 --norm_dist
 ```
 
 Plot histogram of χ<sub>d</sub><sup>2</sup>:

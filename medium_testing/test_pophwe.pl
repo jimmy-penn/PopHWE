@@ -24,7 +24,7 @@ if ($pathToScript =~ /(.+)\/(.+)/) {
 }
 
 my $manifest = shift @ARGV;
-my $python = "/c/Users/yumij/AppData/Local/Python/bin/python";
+my $python = "python";
 
 my ($updateBaseline, $DEBUG, $help) = (0, 0, 0, "");
 

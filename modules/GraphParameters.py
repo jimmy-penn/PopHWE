@@ -41,16 +41,18 @@ class GraphParameters:
         self.height = self.SetValueLimits(args.gh, min_graph_size, max_graph_size, def_graph_size)
         
         chi2_min_val, chi2_max_val = -1000, 100000
-        default_chi2_min, default_chi2_max   = -50, 1000
-        default_pchi2_min, default_pchi2_max = -20, 200
+        default_chi2_min, default_chi2_max   =   0, 1000
+        default_pchi2_min, default_pchi2_max =   0, 50
         default_zval_min, default_zval_max   = -10, 10
         default_zval_bin = 0.1
+        default_pchi2_bin = 1
 
         self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, default_chi2_min)
         self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, default_chi2_max)
         self.ymin  = self.SetValueLimits(args.ymin, chi2_min_val, chi2_max_val, default_chi2_min)
         self.ymax  = self.SetValueLimits(args.ymax, chi2_min_val, chi2_max_val, default_chi2_max)
         
+
         # When y min and max are not specified, set them to the same values as x min and max. This is to make sure that the scatter plot is square.
         if args.ymin == None or args.ymax == None:
             self.ymin = self.xmin
@@ -66,22 +68,22 @@ class GraphParameters:
 
             self.ymin = 0     # Counts are all positive 
 
-            if self.xvar == hwe_file.zval_column:
-                # z-values can be negative
+            if self.xvar in (hwe_file.zval_column):
+                # z-values and dChi2 values can be negative
                 self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, default_min)
                 default_min = default_zval_min
                 default_max = default_zval_max
                 default_bin_size = default_zval_bin 
-            elif self.xvar in [hwe_file.pchi2_column, hwe_file.dchi2_column]:
+            elif self.xvar in [hwe_file.pchi2_column]:
+                self.xmin  = self.SetValueLimits(args.xmin, chi2_min_val, chi2_max_val, default_pchi2_min)
+                self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, default_pchi2_max)
                 default_min = default_pchi2_min
                 default_max = default_pchi2_max
+                default_bin_size = default_pchi2_bin 
             
             self.bin_size = self.SetValueLimits(args.bin_size, min_bin_size, max_bin_size, default_bin_size)
             self.xmax  = self.SetValueLimits(args.xmax, chi2_min_val, chi2_max_val, default_max)
             self.ymax  = self.SetValueLimits(args.ymax, min_cnts, max_cnts, default_cnts)
-
-#            print(f"bin {self.bin_size}")
-#            exit()
         else:
             self.dot_size = self.SetValueLimits(args.dot_size, 1, 100, 10)
 
