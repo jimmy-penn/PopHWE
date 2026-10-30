@@ -74,7 +74,7 @@ The first column contains variant IDs, and the remaining columns contain counts 
 
 ### Running `ComputePopHWE.py` to perform PopHWE chi-square test
 
-If the genotype counts have already been calculated using other tools, `GetGenoCntsFromVcf.py` does not need to be run. The counts can be saved to a file in the same format (the first column header must be `VariantID`; the other column headers can be any strings naming the ancestry groups) and passed to `ComputePopHWE.py`, which calculates the χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>, and Z<sub>p</sub> values and reports them in the output file as `CChi2`, `EChi2`, `PChi2`, `DChi2`, `Zp`, and `p-value`, respectively. The script also writes the genotype counts and the sums of expected genotype counts (`Seaa`, `Seab`, `Sebb`) to the output file.
+If the genotype counts have already been calculated using other tools, `GetGenoCntsFromVcf.py` does not need to be run. The counts can be saved to a file in the same format (the first column header must be `VariantID`; the other column headers can be any strings naming the ancestry groups) and passed to `ComputePopHWE.py`, which calculates the χ<sub>c</sub><sup>2</sup>, χ<sub>e</sub><sup>2</sup>,  χ<sub>d</sub><sup>2</sup>, χ<sub>p</sub><sup>2</sup>, and Z<sub>p</sub> values and reports them in the output file as `CChi2`, `EChi2`, `DChi2`, `PChi2`, and `Zp`, respectively. The p-values are calculated using χ<sub>p</sub><sup>2</sup> values and displayed on the last column. The script also writes the genotype counts and the sums of expected genotype counts (`Seaa`, `Seab`, `Sebb`) to the output file.
 
 
 ``` sh
